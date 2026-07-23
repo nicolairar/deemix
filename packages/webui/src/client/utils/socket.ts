@@ -1,7 +1,10 @@
 class CustomSocket {
 	private ws: WebSocket | null = null;
-	private _listeners: Record<string, (data: any) => any> = {};
-	private _rawListeners: Array<{ type: string; cb: EventListenerOrEventListenerObject }> = [];
+	private _listeners: Record<string, Array<(data: any) => any>> = {};
+	private _rawListeners: Array<{
+		type: string;
+		cb: EventListenerOrEventListenerObject;
+	}> = [];
 	private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 	private reconnectDelay = 1000;
 
@@ -19,10 +22,15 @@ class CustomSocket {
 
 		this.ws.addEventListener("open", () => {
 			this.reconnectDelay = 1000;
-			// Re-register message listeners on the new socket
-			for (const [key, cb] of Object.entries(this._listeners)) {
-				this._addMessageListener(key, cb);
-			}
+			// Re-register all message listeners on the new socket
+			this.ws?.addEventListener("message", (event) => {
+				this._dispatchMessage(event);
+			});
+		});
+
+		// Also listen immediately (before open) so listeners registered synchronously work
+		this.ws.addEventListener("message", (event) => {
+			this._dispatchMessage(event);
 		});
 
 		this.ws.addEventListener("close", () => {
@@ -34,6 +42,20 @@ class CustomSocket {
 		});
 	}
 
+	private _dispatchMessage(event: MessageEvent) {
+		try {
+			const messageData = JSON.parse(event.data);
+			const cbs = this._listeners[messageData.key];
+			if (cbs) {
+				for (const cb of cbs) {
+					cb(messageData.data);
+				}
+			}
+		} catch {
+			// ignore malformed messages
+		}
+	}
+
 	private _scheduleReconnect() {
 		if (this.reconnectTimer) return;
 		this.reconnectTimer = setTimeout(() => {
@@ -41,13 +63,6 @@ class CustomSocket {
 			this._connect();
 		}, this.reconnectDelay);
 		this.reconnectDelay = Math.min(this.reconnectDelay * 2, 10_000);
-	}
-
-	private _addMessageListener(key: string, cb: (data: any) => any) {
-		this.ws?.addEventListener("message", (event) => {
-			const messageData = JSON.parse(event.data);
-			if (messageData.key === key) cb(messageData.data);
-		});
 	}
 
 	get readyState(): number {
@@ -67,13 +82,20 @@ class CustomSocket {
 
 	on(key: string, cb: (ev: any) => any) {
 		if (!this._listeners[key]) {
-			this._listeners[key] = cb;
-			this._addMessageListener(key, cb);
+			this._listeners[key] = [];
+		}
+		if (!this._listeners[key].includes(cb)) {
+			this._listeners[key].push(cb);
 		}
 	}
 
-	off(key: string) {
-		delete this._listeners[key];
+	off(key: string, cb?: (ev: any) => any) {
+		if (!this._listeners[key]) return;
+		if (cb) {
+			this._listeners[key] = this._listeners[key].filter((fn) => fn !== cb);
+		} else {
+			delete this._listeners[key];
+		}
 	}
 }
 
