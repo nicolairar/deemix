@@ -339,12 +339,14 @@ function finishDownload({ uuid }: { uuid: string }) {
 		toast(t("toasts.allDownloaded"), "done_all");
 	}
 }
-function startConversion({ uuid }: { uuid: string; title: string }) {
+function startConversion({ uuid, title }: { uuid: string; title: string }) {
 	queueList.value[uuid].status = "converting";
 	queueList.value[uuid].conversion = 0;
+	toast(`Converting "${title}"…`, "sync", false, "apple_convert_" + uuid);
 }
-function finishConversion(downloadObject) {
+function finishConversion(downloadObject: { uuid: string; size: number }) {
 	queueList.value[downloadObject.uuid].size = downloadObject.size;
+	toast("Conversion done", "check", true, "apple_convert_" + downloadObject.uuid);
 }
 async function showErrorsTab(item) {
 	setErrors(item);

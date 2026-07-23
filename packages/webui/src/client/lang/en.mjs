@@ -83,6 +83,7 @@ const en = {
 		title: "Errors for {name}",
 		postTitle: "After download errors",
 		ids: {
+			pluginNotEnabled: "Plugin not enabled — check credentials in Settings",
 			invalidURL: "URL not recognized",
 			unsupportedURL: "URL not supported yet",
 			ISRCnotOnDeezer: "Track ISRC is not available on Deezer",

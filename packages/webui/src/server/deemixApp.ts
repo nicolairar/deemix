@@ -1,7 +1,9 @@
 import { CantStream, NotLoggedIn } from "@/helpers/errors.js";
 import { logger } from "@/helpers/logger.js";
 import { GUI_VERSION, WEBUI_PACKAGE_VERSION } from "@/helpers/versions.js";
+import { syncNavidromePlaylist } from "@/helpers/navidrome.js";
 import {
+	AppleMusicPlugin,
 	Collection,
 	Convertable,
 	DEFAULT_SETTINGS,
@@ -40,7 +42,7 @@ export class DeemixApp {
 	deezerAvailable?: DeezerAvailable;
 	latestVersion: string | null;
 
-	plugins: Record<string, SpotifyPlugin>;
+	plugins: Record<string, SpotifyPlugin | AppleMusicPlugin>;
 	settings: Settings;
 
 	listener: Listener;
@@ -54,11 +56,13 @@ export class DeemixApp {
 
 		this.plugins = {
 			spotify: new SpotifyPlugin(),
+			appleMusic: new AppleMusicPlugin(),
 		};
 		this.latestVersion = null;
 		this.listener = listener;
 
 		this.plugins.spotify.setup();
+		this.plugins.appleMusic.setup();
 		this.restoreQueueFromDisk();
 	}
 
@@ -149,6 +153,7 @@ export class DeemixApp {
 			settings: this.settings,
 			defaultSettings,
 			spotifySettings: this.plugins.spotify.getSettings(),
+			appleMusicSettings: this.plugins.appleMusic.getSettings(),
 		};
 	}
 
@@ -348,6 +353,24 @@ export class DeemixApp {
 					this.queue[currentUUID].status = "withErrors";
 				} else {
 					this.queue[currentUUID].status = "completed";
+				}
+
+				// Navidrome sync runs on completed or partial (withErrors) — Apple Music
+				// playlists almost always have some tracks unavailable on Deezer
+				if (
+					this.queue[currentUUID].status !== "failed" &&
+					currentItem.__type__ === "Convertable" &&
+					currentItem.plugin === "appleMusic" &&
+					currentItem.type === "apple_playlist"
+				) {
+					const col = downloadObject as Collection;
+					const trackTitles: string[] = (
+						(col.collection?.tracks as any[]) ?? []
+					)
+						.filter(Boolean)
+						.map((t: any) => String(t.title))
+						.filter(Boolean);
+					syncNavidromePlaylist(col.uuid, col.title, trackTitles);
 				}
 
 				const savedObject = {

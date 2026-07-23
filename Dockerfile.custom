@@ -1,0 +1,37 @@
+# Stage 1: build
+FROM node:22-alpine AS builder
+WORKDIR /app
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy monorepo files
+COPY package.json pnpm-workspace.yaml pnpm-lock.yaml turbo.json ./
+COPY packages/ packages/
+
+# Install dependencies
+RUN pnpm install --frozen-lockfile
+
+# Build all packages
+RUN pnpm build
+
+# Stage 2: runtime — copy everything from builder, no reinstall needed
+FROM node:22-alpine AS runtime
+WORKDIR /app
+
+COPY --from=builder /app/node_modules node_modules/
+COPY --from=builder /app/package.json /app/pnpm-workspace.yaml /app/turbo.json ./
+COPY --from=builder /app/packages/ packages/
+
+EXPOSE 6595
+
+# Pass through env vars
+ENV NODE_ENV=production
+ENV DEEMIX_DATA_DIR=/config
+ENV DEEMIX_MUSIC_DIR=/downloads
+ENV DEEMIX_SERVER_PORT=6595
+ENV DEEMIX_HOST=0.0.0.0
+
+# Entry point: packages/webui/dist/main.js (compiled from src/server/main.ts)
+# cross-env is not needed because NODE_ENV is set above via ENV
+CMD ["node", "packages/webui/dist/main.js"]

@@ -1,3 +1,28 @@
+# deemix — Unofficial Fork
+
+> **Fork by [@nicolairar](https://github.com/nicolairar)** — adds Apple Music playlist import and Navidrome auto-playlist sync on top of the original [bambanah/deemix](https://github.com/bambanah/deemix).
+
+## Added Features
+
+- **Apple Music integration**: Paste any Apple Music playlist, album, or song URL and deemix will find and download the tracks via Deezer
+- **Navidrome auto-sync**: After a playlist download completes, automatically creates the same playlist in your Navidrome instance
+- **Multi-playlist support**: Multiple Apple Music playlists can be queued and downloaded concurrently, each becoming its own Navidrome playlist
+
+## Configuration
+
+Copy `.env.example` to `.env` and fill in:
+
+| Variable | Description |
+|---|---|
+| `APPLE_TEAM_ID` | Your Apple Developer Team ID |
+| `APPLE_KEY_ID` | MusicKit Key ID from developer.apple.com → Keys |
+| `APPLE_PRIVATE_KEY` | Full content of your .p8 key file |
+| `NAVIDROME_URL` | Your Navidrome URL (e.g. `https://stream.example.com`) |
+| `NAVIDROME_USER` | Navidrome admin username |
+| `NAVIDROME_PASSWORD` | Navidrome admin password |
+
+---
+
 # Deemix
 
 This is the monorepo for the revived Deemix project, originally created by the very talented [RemixDev](https://gitlab.com/RemixDev).

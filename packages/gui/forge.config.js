@@ -27,6 +27,13 @@ export default {
 			config: {},
 		},
 		{
+			name: "@electron-forge/maker-dmg",
+			config: {
+				name: "Deemix",
+				overwrite: true,
+			},
+		},
+		{
 			name: "@electron-forge/maker-deb",
 			config: {
 				options: {

@@ -1,7 +1,14 @@
 import type { Listener } from "@/types/listener.js";
 
 export class DownloadObject {
-	type: "track" | "album" | "playlist" | "artist" | "spotify_playlist";
+	type:
+		| "track"
+		| "album"
+		| "playlist"
+		| "artist"
+		| "spotify_playlist"
+		| "apple_playlist"
+		| "apple_album";
 	id: number | string;
 	bitrate: number;
 	title: string;

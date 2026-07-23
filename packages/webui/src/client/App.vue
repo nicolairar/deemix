@@ -3,6 +3,7 @@ import TheDownloadBar from "@/components/downloads/TheDownloadBar.vue";
 import BaseLoadingPlaceholder from "@/components/globals/BaseLoadingPlaceholder.vue";
 import DeezerWarning from "@/components/globals/DeezerWarning.vue";
 import TheContextMenu from "@/components/globals/TheContextMenu.vue";
+import TheAppleMusicPreviewModal from "@/components/globals/TheAppleMusicPreviewModal.vue";
 import TheQualityModal from "@/components/globals/TheQualityModal.vue";
 import TheTrackPreview from "@/components/globals/TheTrackPreview.vue";
 import TheContent from "@/components/TheContent.vue";
@@ -72,6 +73,7 @@ onMounted(() => {
 
 		<TheTrackPreview />
 		<TheQualityModal />
+		<TheAppleMusicPreviewModal />
 
 		<TheContextMenu />
 	</div>
