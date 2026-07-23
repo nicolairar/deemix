@@ -49,6 +49,18 @@ const lastCredentials = ref({
 	clientSecret: "",
 	fallbackSearch: false,
 });
+const appleMusicFeatures = ref({
+	teamId: "",
+	keyId: "",
+	privateKey: "",
+	fallbackSearch: true,
+});
+const lastAppleMusicCredentials = ref({
+	teamId: "",
+	keyId: "",
+	privateKey: "",
+	fallbackSearch: true,
+});
 const lastUser = ref("");
 const spotifyUser = ref(localStorage.getItem("spotifyUser") || "");
 const storedAccountNum = localStorage.getItem("accountNum");
@@ -72,11 +84,14 @@ const userLicense = computed(() => {
 });
 
 onMounted(async () => {
-	const { settingsData, defaultSettingsData, spotifyCredentials } =
+	const { settingsData, defaultSettingsData, spotifyCredentials, appleMusicCredentials } =
 		await getSettingsData();
 
 	defaultSettings.value = defaultSettingsData;
 	spotifyFeatures.value = spotifyCredentials;
+	if (appleMusicCredentials && (appleMusicCredentials.teamId || appleMusicCredentials.keyId)) {
+		appleMusicFeatures.value = { ...appleMusicFeatures.value, ...appleMusicCredentials };
+	}
 	initSettings(settingsData, spotifyCredentials);
 
 	if (spotifyUser.value) {
@@ -120,6 +135,7 @@ function copyARLtoClipboard() {
 function saveSettings() {
 	lastSettings.value = settings.value;
 	lastCredentials.value = spotifyFeatures.value;
+	lastAppleMusicCredentials.value = appleMusicFeatures.value;
 
 	appInfoStore.setSlimDownloads(appInfoRef.hasSlimDownloads);
 	appInfoStore.setSlimSidebar(appInfoRef.hasSlimSidebar);
@@ -143,6 +159,12 @@ function saveSettings() {
 			clientId: spotifyFeatures.value.clientId,
 			clientSecret: spotifyFeatures.value.clientSecret,
 			fallbackSearch: spotifyFeatures.value.fallbackSearch,
+		},
+		appleMusicSettings: {
+			teamId: appleMusicFeatures.value.teamId,
+			keyId: appleMusicFeatures.value.keyId,
+			privateKey: appleMusicFeatures.value.privateKey,
+			fallbackSearch: appleMusicFeatures.value.fallbackSearch,
 		},
 		spotifyUser: changed ? lastUser.value : false,
 	});
@@ -1316,6 +1338,51 @@ function canDownload(bitrate: number) {
 
 			<label class="with-checkbox">
 				<input v-model="spotifyFeatures.fallbackSearch" type="checkbox" />
+				<span class="checkbox-text">{{
+					t("settings.downloads.fallbackSearch")
+				}}</span>
+			</label>
+		</BaseAccordion>
+
+		<BaseAccordion class="settings-group">
+			<template #title>
+				<h3 class="settings-group__header">
+					<img
+						src="@/assets/apple-music-icon.png"
+						alt="Apple Music"
+						class="mr-4 h-6 w-6 rounded-md"
+					/>
+					Apple Music
+				</h3>
+			</template>
+
+			<div class="input-group">
+				<p class="input-group-text">Team ID</p>
+				<input v-model="appleMusicFeatures.teamId" type="text" />
+			</div>
+
+			<div class="input-group">
+				<p class="input-group-text">Key ID</p>
+				<input v-model="appleMusicFeatures.keyId" type="text" />
+			</div>
+
+			<div class="input-group">
+				<p class="input-group-text">Private Key (.p8)</p>
+				<div class="flex gap-2 w-full">
+					<input v-model="appleMusicFeatures.privateKey" type="password" class="flex-1" />
+					<button
+						type="button"
+						class="btn btn-primary"
+						style="white-space: nowrap; padding: 0 12px;"
+						@click="async () => { try { appleMusicFeatures.privateKey = await navigator.clipboard.readText() } catch(e) {} }"
+					>
+						<i class="material-icons" style="font-size:18px;vertical-align:middle;">content_paste</i>
+					</button>
+				</div>
+			</div>
+
+			<label class="with-checkbox">
+				<input v-model="appleMusicFeatures.fallbackSearch" type="checkbox" />
 				<span class="checkbox-text">{{
 					t("settings.downloads.fallbackSearch")
 				}}</span>

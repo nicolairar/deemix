@@ -31,4 +31,5 @@ packages/webui/public/js/*
 .turbo
 tsconfig.tsbuildinfo
 vite.config.*.timestamp-*
-AuthKey_*.p8\n.env\n*.p8
+AuthKey_*.p8
+*.p8

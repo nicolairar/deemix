@@ -1,6 +1,7 @@
 class CustomSocket {
 	private ws: WebSocket | null = null;
-	private listeners: Record<string, (data: any) => any> = {};
+	private _listeners: Record<string, (data: any) => any> = {};
+	private _rawListeners: Array<{ type: string; cb: EventListenerOrEventListenerObject }> = [];
 	private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 	private reconnectDelay = 1000;
 
@@ -11,10 +12,15 @@ class CustomSocket {
 	private _connect() {
 		this.ws = new WebSocket(this.url);
 
+		// Re-attach raw listeners (addEventListener calls from outside)
+		for (const { type, cb } of this._rawListeners) {
+			this.ws.addEventListener(type, cb);
+		}
+
 		this.ws.addEventListener("open", () => {
 			this.reconnectDelay = 1000;
-			// Re-register all listeners on the new socket
-			for (const [key, cb] of Object.entries(this.listeners)) {
+			// Re-register message listeners on the new socket
+			for (const [key, cb] of Object.entries(this._listeners)) {
 				this._addMessageListener(key, cb);
 			}
 		});
@@ -44,6 +50,15 @@ class CustomSocket {
 		});
 	}
 
+	get readyState(): number {
+		return this.ws?.readyState ?? WebSocket.CONNECTING;
+	}
+
+	addEventListener(type: string, cb: EventListenerOrEventListenerObject) {
+		this._rawListeners.push({ type, cb });
+		this.ws?.addEventListener(type, cb);
+	}
+
 	emit(key: string, data?: any) {
 		if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return false;
 		this.ws.send(JSON.stringify({ key, data }));
@@ -51,15 +66,14 @@ class CustomSocket {
 	}
 
 	on(key: string, cb: (ev: any) => any) {
-		if (!this.listeners[key]) {
-			this.listeners[key] = cb;
+		if (!this._listeners[key]) {
+			this._listeners[key] = cb;
 			this._addMessageListener(key, cb);
 		}
 	}
 
 	off(key: string) {
-		delete this.listeners[key];
-		// Listeners on the old ws are cleaned up on next reconnect (new ws instance)
+		delete this._listeners[key];
 	}
 }
 

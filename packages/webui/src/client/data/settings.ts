@@ -3,16 +3,18 @@ import { fetchData } from "@/utils/api-utils";
 let settingsData = {};
 let defaultSettingsData = {};
 let spotifyCredentials: any = {};
+let appleMusicCredentials: any = {};
 
 export async function getSettingsData() {
 	const data = await fetchData("getSettings");
-	const { settings, defaultSettings, spotifySettings } = data;
+	const { settings, defaultSettings, spotifySettings, appleMusicSettings } = data;
 
 	settingsData = settings;
 	defaultSettingsData = defaultSettings;
 	spotifyCredentials = spotifySettings || {};
+	appleMusicCredentials = appleMusicSettings || {};
 
-	return { settingsData, defaultSettingsData, spotifyCredentials };
+	return { settingsData, defaultSettingsData, spotifyCredentials, appleMusicCredentials };
 }
 
 export function getInitialPreviewVolume() {

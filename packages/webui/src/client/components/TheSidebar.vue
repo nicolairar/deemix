@@ -48,7 +48,7 @@ function handleNavClick() {
 	>
 		<router-link
 			:to="{ name: 'Home' }"
-			class="flex w-full justify-center"
+			class="flex w-full flex-col items-center justify-center"
 			@click="handleNavClick"
 		>
 			<img
@@ -57,9 +57,15 @@ function handleNavClick() {
 				class="mx-auto"
 				:class="{
 					'my-2 w-14': hasSlimSidebar,
-					'my-5 w-24': !hasSlimSidebar,
+					'mt-5 mb-1 w-24': !hasSlimSidebar,
 				}"
 			/>
+			<span
+				v-if="!hasSlimSidebar"
+				class="mb-4 text-center text-xs text-gray-400 leading-tight px-2"
+			>
+				fork by Nicolai
+			</span>
 		</router-link>
 
 		<nav className="flex flex-col grow">
