@@ -4,6 +4,8 @@ import { useAppInfoStore } from "@/stores/appInfo";
 import { fetchData } from "@/utils/api-utils";
 import { sendAddToQueue } from "@/utils/downloads";
 import { emitter } from "@/utils/emitter";
+import { socket } from "@/utils/socket";
+import { toast } from "@/utils/toasts";
 import { isValidURL } from "@/utils/utils";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -99,7 +101,16 @@ async function performSearch(term: string, modifierKey: boolean) {
 			}
 		}
 
+		if (term.toLowerCase().includes("music.apple.com") && term.includes("/playlist/")) {
+			emitter.emit("AppleMusicPreview:open", term);
+			return;
+		}
+
 		sendAddToQueue(term);
+
+		if (term.toLowerCase().includes("music.apple.com")) {
+			toast("Searching Apple Music…", "loading", false, "apple_loading");
+		}
 	} else {
 		// The user is searching a normal string
 		if (isShowingSearch && isSameAsLastSearch) return;
@@ -122,14 +133,22 @@ async function performSearch(term: string, modifierKey: boolean) {
 	}
 }
 
+function clearAppleLoadingToast() {
+	toast("", null, true, "apple_loading");
+}
+
 onMounted(() => {
 	document.addEventListener("keydown", focusSearchBar);
 	document.addEventListener("keyup", deleteSearchBarContent);
+	socket.on("addedToQueue", clearAppleLoadingToast);
+	socket.on("queueError", clearAppleLoadingToast);
 });
 
 onUnmounted(() => {
 	document.removeEventListener("keydown", focusSearchBar);
 	document.removeEventListener("keyup", deleteSearchBarContent);
+	socket.off("addedToQueue", clearAppleLoadingToast);
+	socket.off("queueError", clearAppleLoadingToast);
 });
 </script>
 

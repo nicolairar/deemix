@@ -101,11 +101,13 @@ export class DownloadError extends DeemixError {
 }
 
 export class PluginNotEnabledError extends DeemixError {
-	constructor(pluginName: string) {
-		const message = `${pluginName} plugin not enabled`;
-		super(message);
-
+	errid: string;
+	link: string;
+	constructor(pluginName: string, link = "") {
+		super(`${pluginName} plugin is not enabled. Check credentials in Settings.`);
 		this.name = "PluginNotEnabledError";
+		this.errid = "pluginNotEnabled";
+		this.link = link;
 	}
 }
 
