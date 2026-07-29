@@ -10,6 +10,7 @@ import {
 } from "electron";
 import { autoUpdater } from "electron-updater";
 import contextMenu from "electron-context-menu";
+import { execSync } from "child_process";
 import fs from "fs";
 import { fileURLToPath } from "node:url";
 import { platform } from "os";
@@ -270,10 +271,20 @@ autoUpdater.on("download-progress", (progress) => {
 	win?.setTitle(`Deemix Pro — Downloading update ${pct}%…`);
 });
 
-autoUpdater.on("update-downloaded", async () => {
+autoUpdater.on("update-downloaded", async (info) => {
 	win?.setProgressBar(-1);
 	win?.setTitle("Deemix Pro");
 	isDownloading = false;
+
+	// macOS: remove quarantine from the downloaded ZIP so the extracted app
+	// isn't blocked by Gatekeeper (we use ad-hoc signing, not notarization)
+	if (process.platform === "darwin" && info.downloadedFile) {
+		try {
+			execSync(`xattr -rd com.apple.quarantine "${info.downloadedFile}"`);
+		} catch {
+			// quarantine removal is best-effort
+		}
+	}
 
 	await dialog.showMessageBox(win!, {
 		type: "info",
