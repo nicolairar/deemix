@@ -53,13 +53,13 @@ jobs:
       - name: 🔐 Ad-hoc codesign
         run: |
           codesign --deep --force --sign - \
-            "packages/gui/out/Deemix-darwin-arm64/Deemix.app"
+            "packages/gui/out/Deemix Pro-darwin-arm64/Deemix Pro.app"
 
       - name: 🗜️ Create ZIP for auto-updater
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           ditto -c -k --sequesterRsrc --keepParent \
-            "packages/gui/out/Deemix-darwin-arm64/Deemix.app" \
+            "packages/gui/out/Deemix Pro-darwin-arm64/Deemix Pro.app" \
             "nicolai-deemix.${VERSION}.zip"
 
       - name: 📋 Generate latest-mac.yml
