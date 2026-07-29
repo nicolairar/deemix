@@ -6,63 +6,82 @@ on:
 
 jobs:
   release:
+    name: 🚀 Build & Release macOS
     runs-on: macos-latest
 
     steps:
-      - uses: actions/checkout@v4
+      # ── Setup ──────────────────────────────────────────────────────────────
 
-      - uses: actions/setup-node@v4
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 24
+        uses: actions/setup-node@v4
         with:
           node-version: 24
 
-      - uses: pnpm/action-setup@v4
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
 
-      - name: Install dependencies
+      - name: 🔧 Install dependencies
         run: pnpm install
 
-      - name: Build all packages
+      # ── Build ──────────────────────────────────────────────────────────────
+
+      - name: 🏗️ Build all packages (webui + deemix + gui)
         run: pnpm turbo build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Read version
+      - name: 🔖 Read version from package.json
         id: version
-        run: echo "version=$(node -p "require('./packages/gui/package.json').version")" >> $GITHUB_OUTPUT
+        run: |
+          VERSION=$(node -p "require('./packages/gui/package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
 
-      - name: Package Electron app
+      # ── Package ────────────────────────────────────────────────────────────
+
+      - name: ⚡ Package Electron app
         run: pnpm --filter deemix-gui exec electron-forge package
 
-      - name: Ad-hoc codesign
-        run: codesign --deep --force --sign - "packages/gui/out/Deemix-darwin-arm64/Deemix.app"
-
-      - name: Create ZIP (for auto-updater)
+      - name: 🔐 Ad-hoc codesign
         run: |
-          VERSION=${{ steps.version.outputs.version }}
+          codesign --deep --force --sign - \
+            "packages/gui/out/Deemix-darwin-arm64/Deemix.app"
+
+      # ── Artifacts ──────────────────────────────────────────────────────────
+
+      - name: 🗜️ Create ZIP for auto-updater
+        run: |
           ditto -c -k --sequesterRsrc --keepParent \
             "packages/gui/out/Deemix-darwin-arm64/Deemix.app" \
-            "nicolai-deemix.${VERSION}.zip"
+            "nicolai-deemix.${{ steps.version.outputs.version }}.zip"
 
-      - name: Generate latest-mac.yml
+      - name: 📋 Generate latest-mac.yml (auto-updater manifest)
         run: |
-          VERSION=${{ steps.version.outputs.version }}
-          SIZE=$(stat -f%z "nicolai-deemix.${VERSION}.zip")
-          SHA512=$(openssl dgst -sha512 -binary "nicolai-deemix.${VERSION}.zip" | base64)
+          VERSION="${{ steps.version.outputs.version }}"
+          ZIP="nicolai-deemix.${VERSION}.zip"
+          SIZE=$(stat -f%z "$ZIP")
+          SHA512=$(openssl dgst -sha512 -binary "$ZIP" | base64)
           RELEASEDATE=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
-          cat > latest-mac.yml << EOF
+          cat > latest-mac.yml <<EOF
           version: ${VERSION}
           files:
-            - url: nicolai-deemix.${VERSION}.zip
+            - url: ${ZIP}
               sha512: ${SHA512}
               size: ${SIZE}
-          path: nicolai-deemix.${VERSION}.zip
+          path: ${ZIP}
           sha512: ${SHA512}
           releaseDate: '${RELEASEDATE}'
           EOF
+          echo "Generated latest-mac.yml:"
+          cat latest-mac.yml
 
-      - name: Create DMG
+      - name: 💿 Create DMG installer
         run: |
-          VERSION=${{ steps.version.outputs.version }}
           brew install create-dmg
+          VERSION="${{ steps.version.outputs.version }}"
           create-dmg \
             --volname "nicolai-deemix" \
             --window-pos 200 120 \
@@ -74,15 +93,17 @@ jobs:
             "nicolai-deemix.${VERSION}.dmg" \
             "packages/gui/out/Deemix-darwin-arm64/"
 
-      - name: Create GitHub Release
+      # ── Release ────────────────────────────────────────────────────────────
+
+      - name: 🏷️ Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.version.outputs.version }}
           name: ${{ steps.version.outputs.version }}
           body: |
-            Automatic build from commit ${{ github.sha }}
+            **${{ github.event.head_commit.message }}**
 
-            ${{ github.event.head_commit.message }}
+            Commit: ${{ github.sha }}
           files: |
             nicolai-deemix.${{ steps.version.outputs.version }}.dmg
             nicolai-deemix.${{ steps.version.outputs.version }}.zip
