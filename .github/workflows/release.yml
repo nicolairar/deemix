@@ -1,0 +1,91 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  release:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build all packages
+        run: pnpm turbo build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read version
+        id: version
+        run: echo "version=$(node -p "require('./packages/gui/package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Package Electron app
+        run: pnpm --filter deemix-gui exec electron-forge package
+
+      - name: Ad-hoc codesign
+        run: codesign --deep --force --sign - "packages/gui/out/Deemix-darwin-arm64/Deemix.app"
+
+      - name: Create ZIP (for auto-updater)
+        run: |
+          ditto -c -k --sequesterRsrc --keepParent \
+            "packages/gui/out/Deemix-darwin-arm64/Deemix.app" \
+            "deemix-nicolai-mac.zip"
+
+      - name: Generate latest-mac.yml
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          SIZE=$(stat -f%z deemix-nicolai-mac.zip)
+          SHA512=$(openssl dgst -sha512 -binary deemix-nicolai-mac.zip | base64)
+          RELEASEDATE=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+          cat > latest-mac.yml << EOF
+          version: ${VERSION}
+          files:
+            - url: deemix-nicolai-mac.zip
+              sha512: ${SHA512}
+              size: ${SIZE}
+          path: deemix-nicolai-mac.zip
+          sha512: ${SHA512}
+          releaseDate: '${RELEASEDATE}'
+          EOF
+
+      - name: Create DMG
+        run: |
+          brew install create-dmg
+          create-dmg \
+            --volname "deemix-nicolai" \
+            --window-pos 200 120 \
+            --window-size 660 400 \
+            --icon-size 100 \
+            --icon "Deemix.app" 180 170 \
+            --hide-extension "Deemix.app" \
+            --app-drop-link 480 170 \
+            "deemix-nicolai.dmg" \
+            "packages/gui/out/Deemix-darwin-arm64/"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          body: |
+            Automatic build from commit ${{ github.sha }}
+
+            ${{ github.event.head_commit.message }}
+          files: |
+            deemix-nicolai.dmg
+            deemix-nicolai-mac.zip
+            latest-mac.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
