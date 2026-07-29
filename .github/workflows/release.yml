@@ -89,11 +89,11 @@ jobs:
             --window-pos 200 120 \
             --window-size 660 400 \
             --icon-size 100 \
-            --icon "Deemix.app" 180 170 \
-            --hide-extension "Deemix.app" \
+            --icon "Deemix Pro.app" 180 170 \
+            --hide-extension "Deemix Pro.app" \
             --app-drop-link 480 170 \
             "nicolai-deemix.${VERSION}.dmg" \
-            "packages/gui/out/Deemix-darwin-arm64/"
+            "packages/gui/out/Deemix Pro-darwin-arm64/"
 
       - name: 💾 Upload artifacts
         uses: actions/upload-artifact@v4
