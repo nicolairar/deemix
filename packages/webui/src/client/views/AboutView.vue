@@ -19,7 +19,7 @@ const { t } = useI18n();
 				<a href="https://github.com/bambanah/deemix" target="_blank">deemix</a>
 				by <strong>bambanah</strong>, kept alive and extended with an
 				<strong>Apple Music plugin</strong> so you can download tracks by ISRC
-				matching.
+				matching. Auto-updates enabled.
 			</p>
 		</div>
 
