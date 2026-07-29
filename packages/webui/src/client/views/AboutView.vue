@@ -33,16 +33,14 @@ const { t } = useI18n();
 		</div>
 
 		<div class="versions">
+			<p v-if="appInfo.guiVersion">
+				App version:
+				<code>{{ appInfo.guiVersion }}</code>
+			</p>
 			<p>
 				{{ t("about.updates.currentWebuiVersion") }}:
 				<code>{{
 					appInfo.webuiVersion || t("about.updates.versionNotAvailable")
-				}}</code>
-			</p>
-			<p v-if="appInfo.guiVersion">
-				{{ t("about.updates.currentGuiVersion") }}:
-				<code>{{
-					appInfo.guiVersion || t("about.updates.versionNotAvailable")
 				}}</code>
 			</p>
 			<p>
