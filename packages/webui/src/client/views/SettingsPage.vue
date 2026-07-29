@@ -84,13 +84,23 @@ const userLicense = computed(() => {
 });
 
 onMounted(async () => {
-	const { settingsData, defaultSettingsData, spotifyCredentials, appleMusicCredentials } =
-		await getSettingsData();
+	const {
+		settingsData,
+		defaultSettingsData,
+		spotifyCredentials,
+		appleMusicCredentials,
+	} = await getSettingsData();
 
 	defaultSettings.value = defaultSettingsData;
 	spotifyFeatures.value = spotifyCredentials;
-	if (appleMusicCredentials && (appleMusicCredentials.teamId || appleMusicCredentials.keyId)) {
-		appleMusicFeatures.value = { ...appleMusicFeatures.value, ...appleMusicCredentials };
+	if (
+		appleMusicCredentials &&
+		(appleMusicCredentials.teamId || appleMusicCredentials.keyId)
+	) {
+		appleMusicFeatures.value = {
+			...appleMusicFeatures.value,
+			...appleMusicCredentials,
+		};
 	}
 	initSettings(settingsData, spotifyCredentials);
 
@@ -130,6 +140,16 @@ function copyARLtoClipboard() {
 	copyText.setAttribute("type", "password");
 
 	toast(t("settings.toasts.ARLcopied"), "assignment");
+}
+
+function onP8FileChange(event: Event) {
+	const file = (event.target as HTMLInputElement).files?.[0];
+	if (!file) return;
+	const reader = new FileReader();
+	reader.onload = (e) => {
+		appleMusicFeatures.value.privateKey = (e.target?.result as string) ?? "";
+	};
+	reader.readAsText(file);
 }
 
 function saveSettings() {
@@ -1368,16 +1388,45 @@ function canDownload(bitrate: number) {
 
 			<div class="input-group">
 				<p class="input-group-text">Private Key (.p8)</p>
-				<div class="flex gap-2 w-full">
-					<input v-model="appleMusicFeatures.privateKey" type="password" class="flex-1" />
-					<button
-						type="button"
+				<div class="flex w-full gap-2" style="align-items: center">
+					<label
 						class="btn btn-primary"
-						style="white-space: nowrap; padding: 0 12px;"
-						@click="async () => { try { appleMusicFeatures.privateKey = await navigator.clipboard.readText() } catch(e) {} }"
+						style="
+							white-space: nowrap;
+							padding: 0 14px;
+							height: 36px;
+							display: flex;
+							align-items: center;
+							gap: 6px;
+							cursor: pointer;
+							flex-shrink: 0;
+						"
 					>
-						<i class="material-icons" style="font-size:18px;vertical-align:middle;">content_paste</i>
-					</button>
+						<i class="material-icons" style="font-size: 18px">upload_file</i>
+						Carica .p8
+						<input
+							type="file"
+							accept=".p8"
+							style="display: none"
+							@change="onP8FileChange"
+						/>
+					</label>
+					<span
+						style="
+							font-size: 0.82rem;
+							opacity: 0.55;
+							overflow: hidden;
+							text-overflow: ellipsis;
+							white-space: nowrap;
+							flex: 1;
+						"
+					>
+						{{
+							appleMusicFeatures.privateKey
+								? "✓ chiave caricata"
+								: "nessun file selezionato"
+						}}
+					</span>
 				</div>
 			</div>
 
