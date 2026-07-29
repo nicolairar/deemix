@@ -67,18 +67,11 @@ jobs:
           VERSION="${{ steps.version.outputs.version }}"
           ZIP="nicolai-deemix.${VERSION}.zip"
           SIZE=$(stat -f%z "$ZIP")
-          SHA512=$(openssl dgst -sha512 -binary "$ZIP" | base64)
+          SHA512=$(openssl dgst -sha512 -binary "$ZIP" | base64 | tr -d '\n')
           RELEASEDATE=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
-          cat > latest-mac.yml <<EOF
-          version: ${VERSION}
-          files:
-            - url: ${ZIP}
-              sha512: ${SHA512}
-              size: ${SIZE}
-          path: ${ZIP}
-          sha512: ${SHA512}
-          releaseDate: '${RELEASEDATE}'
-          EOF
+          printf 'version: %s\nfiles:\n  - url: %s\n    sha512: %s\n    size: %s\npath: %s\nsha512: %s\nreleaseDate: '"'"'%s'"'"'\n' \
+            "$VERSION" "$ZIP" "$SHA512" "$SIZE" "$ZIP" "$SHA512" "$RELEASEDATE" > latest-mac.yml
+          echo "=== latest-mac.yml ===" && cat latest-mac.yml
 
       - name: 💿 Create DMG installer
         run: |

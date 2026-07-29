@@ -213,102 +213,104 @@ autoUpdater.setFeedURL({
 	private: false,
 });
 
-let updateWin: BrowserWindow | null = null;
-let silentUpdateCheck = true;
+const skippedVersionPath = join(app.getPath("userData"), "skipped-version.txt");
 
-function openUpdateWindow() {
-	if (updateWin && !updateWin.isDestroyed()) {
-		updateWin.focus();
-		return;
-	}
-	updateWin = new BrowserWindow({
-		width: 420,
-		height: 360,
-		resizable: false,
-		minimizable: false,
-		maximizable: false,
-		fullscreenable: false,
-		title: "Deemix Update",
-		titleBarStyle: "hiddenInset",
-		backgroundColor: "#1a1a2e",
-		webPreferences: {
-			preload: join(__dirname, "update-preload.js"),
-			contextIsolation: true,
-			nodeIntegration: false,
-		},
-	});
-	updateWin.loadFile(join(__dirname, "update-window.html"));
-	updateWin.on("closed", () => {
-		updateWin = null;
-	});
-}
-
-function sendToUpdateWin(state: string, payload?: Record<string, unknown>) {
-	if (updateWin && !updateWin.isDestroyed()) {
-		updateWin.webContents.send("update-state", state, payload ?? {});
+function getSkippedVersion(): string {
+	try {
+		return fs.readFileSync(skippedVersionPath, "utf-8").trim();
+	} catch {
+		return "";
 	}
 }
 
-autoUpdater.on("checking-for-update", () => {
-	sendToUpdateWin("checking");
-});
+function setSkippedVersion(version: string) {
+	fs.writeFileSync(skippedVersionPath, version, "utf-8");
+}
 
-autoUpdater.on("update-available", (info) => {
-	if (silentUpdateCheck) {
-		openUpdateWindow();
-	}
-	sendToUpdateWin("available", {
-		version: info.version,
-		current: app.getVersion(),
+let isDownloading = false;
+let silentCheck = true;
+
+autoUpdater.on("update-available", async (info) => {
+	if (getSkippedVersion() === info.version) return;
+
+	const { response } = await dialog.showMessageBox(win!, {
+		type: "info",
+		title: "Update available",
+		message: `Deemix Pro ${info.version} is available`,
+		detail: `You are on ${app.getVersion()}. Do you want to download and install the update now?`,
+		buttons: ["Download & Install", "Later", "Skip this version"],
+		defaultId: 0,
+		cancelId: 1,
 	});
+
+	if (response === 0) {
+		isDownloading = true;
+		autoUpdater.downloadUpdate();
+	} else if (response === 2) {
+		setSkippedVersion(info.version);
+	}
 });
 
 autoUpdater.on("update-not-available", () => {
-	if (!silentUpdateCheck) {
-		sendToUpdateWin("not-available", { current: app.getVersion() });
-	} else {
-		updateWin?.close();
+	if (!silentCheck) {
+		dialog.showMessageBox(win!, {
+			type: "info",
+			title: "No updates",
+			message: "You're up to date!",
+			detail: `Deemix Pro ${app.getVersion()} is the latest version.`,
+			buttons: ["OK"],
+		});
 	}
 });
 
 autoUpdater.on("download-progress", (progress) => {
-	sendToUpdateWin("progress", {
-		percent: progress.percent,
-		transferred: progress.transferred,
-		total: progress.total,
-	});
+	if (!isDownloading) return;
+	const pct = Math.round(progress.percent);
 	win?.setProgressBar(progress.percent / 100);
+	win?.setTitle(`Deemix Pro — Downloading update ${pct}%…`);
 });
 
-autoUpdater.on("update-downloaded", () => {
+autoUpdater.on("update-downloaded", async () => {
 	win?.setProgressBar(-1);
-	sendToUpdateWin("downloaded");
-	setTimeout(() => autoUpdater.quitAndInstall(false, true), 1500);
+	win?.setTitle("Deemix Pro");
+	isDownloading = false;
+
+	await dialog.showMessageBox(win!, {
+		type: "info",
+		title: "Update ready",
+		message: "Update downloaded",
+		detail:
+			"The update has been downloaded. The app will now restart to install it.",
+		buttons: ["Restart now"],
+	});
+
+	autoUpdater.quitAndInstall(false, true);
 });
 
 autoUpdater.on("error", (err) => {
-	if (!silentUpdateCheck) {
-		sendToUpdateWin("error", { message: err.message });
-	} else {
-		updateWin?.close();
+	win?.setProgressBar(-1);
+	win?.setTitle("Deemix Pro");
+	isDownloading = false;
+	if (!silentCheck) {
+		dialog.showMessageBox(win!, {
+			type: "error",
+			title: "Update failed",
+			message: "Could not check for updates",
+			detail: err.message,
+			buttons: ["OK"],
+		});
 	}
 });
 
-ipcMain.on("update-start-download", () => autoUpdater.downloadUpdate());
-ipcMain.on("update-close-window", () => updateWin?.close());
-
-function checkForUpdates(silent = false) {
-	silentUpdateCheck = silent;
-	if (!silent) openUpdateWindow();
+function checkForUpdates(silent = true) {
+	silentCheck = silent;
 	autoUpdater.checkForUpdates().catch(() => {});
 }
 
-// Check on startup (silent — only show dialog if update found)
 app.whenReady().then(() => {
 	setTimeout(() => checkForUpdates(true), 5000);
 });
 
-// Expose to renderer via IPC for a "Controlla aggiornamenti" menu item
 ipcMain.on("checkForUpdates", () => checkForUpdates(false));
 
 ipcMain.on("openDownloadsFolder", () => {
