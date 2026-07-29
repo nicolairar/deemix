@@ -6,7 +6,7 @@ import { useErrorStore } from "@/stores/errors";
 import { useLoginStore } from "@/stores/login";
 import { fetchData, postToServer } from "@/utils/api-utils";
 import { socket } from "@/utils/socket";
-import { toast } from "@/utils/toasts";
+import { clearToast, toast } from "@/utils/toasts";
 import { computed, onMounted, onUnmounted, ref, useTemplateRef } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
@@ -179,6 +179,9 @@ function addToQueue(queueItem, current = false) {
 		startDownload(queueItem.uuid);
 	}
 
+	// Clear the "Adding X tracks to queue…" toast from the Apple Music modal
+	clearToast("apple_dl");
+
 	if (!queueItem.silent) {
 		toast(
 			t("toasts.addedToQueue", { item: queueItem.title }),
@@ -346,7 +349,8 @@ function startConversion({ uuid, title }: { uuid: string; title: string }) {
 }
 function finishConversion(downloadObject: { uuid: string; size: number }) {
 	queueList.value[downloadObject.uuid].size = downloadObject.size;
-	toast("Conversion done", "check", true, "apple_convert_" + downloadObject.uuid);
+	clearToast("apple_convert_" + downloadObject.uuid);
+	toast("Conversion done", "check", true);
 }
 async function showErrorsTab(item) {
 	setErrors(item);

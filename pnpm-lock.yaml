@@ -88,7 +88,7 @@ importers:
     devDependencies:
       '@yao-pkg/pkg':
         specifier: ^5.15.0
-        version: 5.16.1(encoding@0.1.13)(supports-color@5.5.0)
+        version: 5.16.1(encoding@0.1.13)
       commander:
         specifier: ^12.1.0
         version: 12.1.0
@@ -163,6 +163,9 @@ importers:
       electron-squirrel-startup:
         specifier: ^1.0.1
         version: 1.0.1
+      electron-updater:
+        specifier: ^6.8.9
+        version: 6.8.9
       electron-window-state-manager:
         specifier: ^0.3.2
         version: 0.3.2
@@ -2276,6 +2279,10 @@ packages:
   buffer@5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
 
+  builder-util-runtime@9.7.0:
+    resolution: {integrity: sha512-g/kR520giAFYkSXTzcmF3kqQq7wi8F6N6SzeDgZrqTBN+VHdmgWOyTdD1yD7AATDId/yXLvuP34CxW46/BwCdw==}
+    engines: {node: '>=12.0.0'}
+
   bundle-require@5.1.0:
     resolution: {integrity: sha512-3WrrOuZiyaaZPWiEt4G3+IffISVC9HYlWueJEBWED4ZH4aIAC2PnkdnuRrR94M+w6yGWn4AglWtJtBI8YqvgoA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -2813,6 +2820,9 @@ packages:
 
   electron-to-chromium@1.5.375:
     resolution: {integrity: sha512-ZWP5eB4BVPW/ZYo9252hQZHZ5XavtsTgpbhcmMmRwymavC5AsLWQWBPaKMeNd2LW0KGby5HPXvj7+sr4ta5j/Q==}
+
+  electron-updater@6.8.9:
+    resolution: {integrity: sha512-ZhVxM9iGONUpZGI1FxdMRgJjUFXi7AYGVa5PwKlO1tV1/4zDxQmfKpXOHVztKrd6L9rLcFjERvi1Mf2vxyTkig==}
 
   electron-window-state-manager@0.3.2:
     resolution: {integrity: sha512-66YG0zE/BqKBNO6vzJbIe5DzWYxWFU0ZjP1VGbfEXI1quwgCGPMCXJ3xH66kxKsNcGW703t5GPthGqxoTupu6Q==}
@@ -3785,6 +3795,9 @@ packages:
   kuler@2.0.0:
     resolution: {integrity: sha512-Xq9nH7KlWZmXAtodXDDRE7vs6DU1gTU8zYDHDiWLSip45Egwq3plLHzPn27NgvzL2r1LMPC1vdqh98sQxtqj4A==}
 
+  lazy-val@1.0.5:
+    resolution: {integrity: sha512-0/BnGCCfyUMkBpeDgWihanIAF9JmZhHBgUhEqzvf+adhNGLoP6TaiI5oF8oyb3I45P+PcnrqihSf01M0l0G5+Q==}
+
   levn@0.4.1:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
@@ -3838,9 +3851,16 @@ packages:
   lodash.camelcase@4.3.0:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
 
+  lodash.escaperegexp@4.1.2:
+    resolution: {integrity: sha512-TM9YBvyC84ZxE3rgfefxUWiQKLilstD6k7PTGt6wfbtXF8ixIJLOL3VYyV/z+ZiPLsVxAsKAFVwWlWeb2Y8Yyw==}
+
   lodash.get@4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
     deprecated: This package is deprecated. Use the optional chaining (?.) operator instead.
+
+  lodash.isequal@4.5.0:
+    resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
+    deprecated: This package is deprecated. Use require('node:util').isDeepStrictEqual instead.
 
   lodash.isplainobject@4.0.6:
     resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
@@ -5032,6 +5052,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  semver@7.7.4:
+    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   send@0.19.0:
     resolution: {integrity: sha512-dW41u5VfLXu8SJh5bwRmyYUbAoSB3c9uQh6L8h/KtsFREPWpbX1lrljJo186Jc4nmci/sGUZ9a0a0J2zgfq2hw==}
     engines: {node: '>= 0.8.0'}
@@ -5403,6 +5428,9 @@ packages:
 
   tiny-each-async@2.0.3:
     resolution: {integrity: sha512-5ROII7nElnAirvFn8g7H7MtpfV1daMcyfTGQwsn/x2VtyV+VPiO5CjReCJtWLvoKTDEDmZocf3cNPraiMnBXLA==}
+
+  tiny-typed-emitter@2.1.0:
+    resolution: {integrity: sha512-qVtvMxeXbVej0cQWKqVSSAHmKZEHAvxdF8HEUBFWts8h+xEo5m/lEiPakuyZ3BnCBjOD8i24kzNOiOLLgsSxhA==}
 
   tinybench@2.9.0:
     resolution: {integrity: sha512-0+DUvqWMValLmha6lr4kD8iAMK1HzV0/aKnCtWb9v9641TnP/MFb7Pc2bxoxQjTXAErryXVgUOfv2YqNllqGeg==}
@@ -6332,7 +6360,7 @@ snapshots:
       '@electron-forge/core': 7.11.2(encoding@0.1.13)(esbuild@0.25.8)(postcss@8.5.15)(supports-color@5.5.0)
       '@electron-forge/core-utils': 7.11.2
       '@electron-forge/shared-types': 7.11.2
-      '@electron/get': 3.1.0(supports-color@5.5.0)
+      '@electron/get': 3.1.0
       '@inquirer/prompts': 6.0.1
       '@listr2/prompt-adapter-inquirer': 2.0.22(@inquirer/prompts@6.0.1)
       chalk: 4.1.2
@@ -6389,8 +6417,8 @@ snapshots:
       '@electron-forge/template-webpack': 7.11.2
       '@electron-forge/template-webpack-typescript': 7.11.2(esbuild@0.25.8)(postcss@8.5.15)
       '@electron-forge/tracer': 7.11.2
-      '@electron/get': 3.1.0(supports-color@5.5.0)
-      '@electron/packager': 18.3.5(supports-color@5.5.0)
+      '@electron/get': 3.1.0
+      '@electron/packager': 18.3.5
       '@electron/rebuild': 3.7.0
       '@malept/cross-spawn-promise': 2.0.0
       '@vscode/sudo-prompt': 9.3.2
@@ -6517,7 +6545,7 @@ snapshots:
   '@electron-forge/shared-types@7.11.2':
     dependencies:
       '@electron-forge/tracer': 7.11.2
-      '@electron/packager': 18.3.5(supports-color@5.5.0)
+      '@electron/packager': 18.3.5
       '@electron/rebuild': 3.7.0
       listr2: 7.0.2
     transitivePeerDependencies:
@@ -6606,13 +6634,13 @@ snapshots:
       got: 11.8.6
       progress: 2.0.3
       semver: 6.3.1
-      sumchecker: 3.0.1(supports-color@5.5.0)
+      sumchecker: 3.0.1
     optionalDependencies:
       global-agent: 3.0.0
     transitivePeerDependencies:
       - supports-color
 
-  '@electron/get@3.1.0(supports-color@5.5.0)':
+  '@electron/get@3.1.0':
     dependencies:
       debug: 4.4.1(supports-color@5.5.0)
       env-paths: 2.2.1
@@ -6620,7 +6648,7 @@ snapshots:
       got: 11.8.6
       progress: 2.0.3
       semver: 6.3.1
-      sumchecker: 3.0.1(supports-color@5.5.0)
+      sumchecker: 3.0.1
     optionalDependencies:
       global-agent: 3.0.0
     transitivePeerDependencies:
@@ -6642,7 +6670,7 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@electron/notarize@2.5.0(supports-color@5.5.0)':
+  '@electron/notarize@2.5.0':
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
       fs-extra: 9.1.0
@@ -6650,7 +6678,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@electron/osx-sign@1.3.1(supports-color@5.5.0)':
+  '@electron/osx-sign@1.3.1':
     dependencies:
       compare-version: 0.1.2
       debug: 4.4.3(supports-color@5.5.0)
@@ -6661,19 +6689,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@electron/packager@18.3.5(supports-color@5.5.0)':
+  '@electron/packager@18.3.5':
     dependencies:
       '@electron/asar': 3.2.15
-      '@electron/get': 3.1.0(supports-color@5.5.0)
-      '@electron/notarize': 2.5.0(supports-color@5.5.0)
-      '@electron/osx-sign': 1.3.1(supports-color@5.5.0)
-      '@electron/universal': 2.0.1(supports-color@5.5.0)
+      '@electron/get': 3.1.0
+      '@electron/notarize': 2.5.0
+      '@electron/osx-sign': 1.3.1
+      '@electron/universal': 2.0.1
       '@electron/windows-sign': 1.1.3
       debug: 4.4.3(supports-color@5.5.0)
       extract-zip: 2.0.1
       filenamify: 4.3.0
       fs-extra: 11.3.0
-      galactus: 1.0.0(supports-color@5.5.0)
+      galactus: 1.0.0
       get-package-info: 1.0.0
       junk: 3.1.0
       parse-author: 2.0.0
@@ -6716,7 +6744,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@electron/universal@2.0.1(supports-color@5.5.0)':
+  '@electron/universal@2.0.1':
     dependencies:
       '@electron/asar': 3.2.15
       '@malept/cross-spawn-promise': 2.0.0
@@ -7916,9 +7944,9 @@ snapshots:
 
   '@xtuc/long@4.2.2': {}
 
-  '@yao-pkg/pkg-fetch@3.5.16(encoding@0.1.13)(supports-color@5.5.0)':
+  '@yao-pkg/pkg-fetch@3.5.16(encoding@0.1.13)':
     dependencies:
-      https-proxy-agent: 5.0.1(supports-color@5.5.0)
+      https-proxy-agent: 5.0.1
       node-fetch: 2.7.0(encoding@0.1.13)
       picocolors: 1.1.1
       progress: 2.0.3
@@ -7929,12 +7957,12 @@ snapshots:
       - encoding
       - supports-color
 
-  '@yao-pkg/pkg@5.16.1(encoding@0.1.13)(supports-color@5.5.0)':
+  '@yao-pkg/pkg@5.16.1(encoding@0.1.13)':
     dependencies:
       '@babel/generator': 7.23.0
       '@babel/parser': 7.26.2
       '@babel/types': 7.26.0
-      '@yao-pkg/pkg-fetch': 3.5.16(encoding@0.1.13)(supports-color@5.5.0)
+      '@yao-pkg/pkg-fetch': 3.5.16(encoding@0.1.13)
       into-stream: 6.0.0
       minimist: 1.2.8
       multistream: 4.1.0
@@ -7982,7 +8010,7 @@ snapshots:
 
   acorn@8.17.0: {}
 
-  agent-base@6.0.2(supports-color@5.5.0):
+  agent-base@6.0.2:
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
@@ -8219,6 +8247,13 @@ snapshots:
     dependencies:
       base64-js: 1.5.1
       ieee754: 1.2.1
+
+  builder-util-runtime@9.7.0:
+    dependencies:
+      debug: 4.4.3(supports-color@5.5.0)
+      sax: 1.4.1
+    transitivePeerDependencies:
+      - supports-color
 
   bundle-require@5.1.0(esbuild@0.25.9):
     dependencies:
@@ -8778,6 +8813,19 @@ snapshots:
 
   electron-to-chromium@1.5.375: {}
 
+  electron-updater@6.8.9:
+    dependencies:
+      builder-util-runtime: 9.7.0
+      fs-extra: 10.1.0
+      js-yaml: 4.1.0
+      lazy-val: 1.0.5
+      lodash.escaperegexp: 4.1.2
+      lodash.isequal: 4.5.0
+      semver: 7.7.4
+      tiny-typed-emitter: 2.1.0
+    transitivePeerDependencies:
+      - supports-color
+
   electron-window-state-manager@0.3.2:
     dependencies:
       app-root-path: 1.4.0
@@ -9289,7 +9337,7 @@ snapshots:
 
   flatted@3.3.3: {}
 
-  flora-colossus@2.0.0(supports-color@5.5.0):
+  flora-colossus@2.0.0:
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
       fs-extra: 10.1.0
@@ -9396,10 +9444,10 @@ snapshots:
 
   function-bind@1.1.2: {}
 
-  galactus@1.0.0(supports-color@5.5.0):
+  galactus@1.0.0:
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
-      flora-colossus: 2.0.0(supports-color@5.5.0)
+      flora-colossus: 2.0.0
       fs-extra: 10.1.0
     transitivePeerDependencies:
       - supports-color
@@ -9632,7 +9680,7 @@ snapshots:
   http-proxy-agent@5.0.0:
     dependencies:
       '@tootallnate/once': 2.0.1
-      agent-base: 6.0.2(supports-color@5.5.0)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
@@ -9654,9 +9702,9 @@ snapshots:
       quick-lru: 5.1.1
       resolve-alpn: 1.2.1
 
-  https-proxy-agent@5.0.1(supports-color@5.5.0):
+  https-proxy-agent@5.0.1:
     dependencies:
-      agent-base: 6.0.2(supports-color@5.5.0)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
       - supports-color
@@ -9897,6 +9945,8 @@ snapshots:
 
   kuler@2.0.0: {}
 
+  lazy-val@1.0.5: {}
+
   levn@0.4.1:
     dependencies:
       prelude-ls: 1.2.1
@@ -9949,7 +9999,11 @@ snapshots:
 
   lodash.camelcase@4.3.0: {}
 
+  lodash.escaperegexp@4.1.2: {}
+
   lodash.get@4.4.2: {}
+
+  lodash.isequal@4.5.0: {}
 
   lodash.isplainobject@4.0.6: {}
 
@@ -10026,7 +10080,7 @@ snapshots:
       cacache: 16.1.3
       http-cache-semantics: 4.2.0
       http-proxy-agent: 5.0.0
-      https-proxy-agent: 5.0.1(supports-color@5.5.0)
+      https-proxy-agent: 5.0.1
       is-lambda: 1.0.1
       lru-cache: 7.18.3
       minipass: 3.3.6
@@ -11057,6 +11111,8 @@ snapshots:
 
   semver@7.7.2: {}
 
+  semver@7.7.4: {}
+
   send@0.19.0:
     dependencies:
       debug: 2.6.9
@@ -11154,7 +11210,7 @@ snapshots:
 
   socks-proxy-agent@7.0.0:
     dependencies:
-      agent-base: 6.0.2(supports-color@5.5.0)
+      agent-base: 6.0.2
       debug: 4.4.3(supports-color@5.5.0)
       socks: 2.8.9
     transitivePeerDependencies:
@@ -11314,7 +11370,7 @@ snapshots:
       pirates: 4.0.6
       ts-interface-checker: 0.1.13
 
-  sumchecker@3.0.1(supports-color@5.5.0):
+  sumchecker@3.0.1:
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
     transitivePeerDependencies:
@@ -11479,6 +11535,8 @@ snapshots:
 
   tiny-each-async@2.0.3:
     optional: true
+
+  tiny-typed-emitter@2.1.0: {}
 
   tinybench@2.9.0: {}
 

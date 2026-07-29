@@ -22,13 +22,8 @@ class CustomSocket {
 
 		this.ws.addEventListener("open", () => {
 			this.reconnectDelay = 1000;
-			// Re-register all message listeners on the new socket
-			this.ws?.addEventListener("message", (event) => {
-				this._dispatchMessage(event);
-			});
 		});
 
-		// Also listen immediately (before open) so listeners registered synchronously work
 		this.ws.addEventListener("message", (event) => {
 			this._dispatchMessage(event);
 		});

@@ -5,7 +5,11 @@ import { contextBridge, ipcRenderer } from "electron";
 contextBridge.exposeInMainWorld("api", {
 	send: (channel, data) => {
 		// whitelist channels
-		const validChannels = ["openDownloadsFolder", "selectDownloadFolder"];
+		const validChannels = [
+			"openDownloadsFolder",
+			"selectDownloadFolder",
+			"checkForUpdates",
+		];
 		if (validChannels.includes(channel)) {
 			ipcRenderer.send(channel, data);
 		}

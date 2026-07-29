@@ -211,9 +211,7 @@ export default class AppleMusicPlugin extends BasePlugin {
 				return generateTrackItem(dz, cachedTrack.id, bitrate);
 		}
 
-		throw new TrackNotOnDeezer(
-			`https://music.apple.com/song/${linkId}`
-		);
+		throw new TrackNotOnDeezer(`https://music.apple.com/song/${linkId}`);
 	}
 
 	// ─── Album ─────────────────────────────────────────────────────────────
@@ -238,9 +236,7 @@ export default class AppleMusicPlugin extends BasePlugin {
 		try {
 			return generateAlbumItem(dz, `upc:${cachedAlbum.upc}`, bitrate);
 		} catch {
-			throw new AlbumNotOnDeezer(
-				`https://music.apple.com/album/${link_id}`
-			);
+			throw new AlbumNotOnDeezer(`https://music.apple.com/album/${link_id}`);
 		}
 	}
 
@@ -285,8 +281,7 @@ export default class AppleMusicPlugin extends BasePlugin {
 			...(playlist.relationships?.tracks?.data ?? []),
 		];
 
-		let nextUrl: string | null =
-			playlist.relationships?.tracks?.next ?? null;
+		let nextUrl: string | null = playlist.relationships?.tracks?.next ?? null;
 		while (nextUrl) {
 			const page: any = await got
 				.get(`https://api.music.apple.com${nextUrl}`, {
@@ -300,9 +295,7 @@ export default class AppleMusicPlugin extends BasePlugin {
 			nextUrl = page.next ?? null;
 		}
 
-		const artworkUrl = attrs.artwork
-			? formatArtworkUrl(attrs.artwork.url)
-			: "";
+		const artworkUrl = attrs.artwork ? formatArtworkUrl(attrs.artwork.url) : "";
 		const curatorName = attrs.curatorName ?? "";
 		link = attrs.url ?? link;
 
@@ -663,12 +656,9 @@ export default class AppleMusicPlugin extends BasePlugin {
 
 	checkCredentials() {
 		// Env vars override config file
-		const teamId =
-			process.env.APPLE_TEAM_ID || this.credentials.teamId;
-		const keyId =
-			process.env.APPLE_KEY_ID || this.credentials.keyId;
-		const rawKey =
-			process.env.APPLE_PRIVATE_KEY || this.credentials.privateKey;
+		const teamId = process.env.APPLE_TEAM_ID || this.credentials.teamId;
+		const keyId = process.env.APPLE_KEY_ID || this.credentials.keyId;
+		const rawKey = process.env.APPLE_PRIVATE_KEY || this.credentials.privateKey;
 
 		// Normalise literal \n sequences embedded in env var values
 		const privateKey = rawKey.replace(/\\n/g, "\n");
@@ -711,27 +701,35 @@ export default class AppleMusicPlugin extends BasePlugin {
 
 		let playlistResp: any;
 		try {
-			playlistResp = await got.get(`${baseUrl}/playlists/${link_id}?include=tracks`, {
-				headers,
-				responseType: "json",
-			}).json();
+			playlistResp = await got
+				.get(`${baseUrl}/playlists/${link_id}?include=tracks`, {
+					headers,
+					responseType: "json",
+				})
+				.json();
 		} catch (e: any) {
-			if (e?.response?.statusCode === 401) throw new PluginNotEnabledError("Apple Music", url);
-			if (e?.response?.statusCode === 404) throw new Error("Playlist not found on Apple Music");
+			if (e?.response?.statusCode === 401)
+				throw new PluginNotEnabledError("Apple Music", url);
+			if (e?.response?.statusCode === 404)
+				throw new Error("Playlist not found on Apple Music");
 			throw e;
 		}
 
 		const playlist = playlistResp.data[0];
 		const attrs = playlist.attributes;
-		const tracklist: AppleMusicTrack[] = [...(playlist.relationships?.tracks?.data ?? [])];
+		const tracklist: AppleMusicTrack[] = [
+			...(playlist.relationships?.tracks?.data ?? []),
+		];
 
 		// Paginate if needed
 		let nextUrl: string | null = playlist.relationships?.tracks?.next ?? null;
 		while (nextUrl) {
-			const page: any = await got.get(`https://api.music.apple.com${nextUrl}`, {
-				headers,
-				responseType: "json",
-			}).json();
+			const page: any = await got
+				.get(`https://api.music.apple.com${nextUrl}`, {
+					headers,
+					responseType: "json",
+				})
+				.json();
 			if (Array.isArray(page.data)) tracklist.push(...page.data);
 			nextUrl = page.next ?? null;
 		}
@@ -746,6 +744,9 @@ export default class AppleMusicPlugin extends BasePlugin {
 				artist: t.attributes.artistName,
 				album: t.attributes.albumName,
 				isrc: t.attributes.isrc,
+				artworkUrl: t.attributes.artwork
+					? formatArtworkUrl(t.attributes.artwork.url, 60)
+					: "",
 			})),
 		};
 	}

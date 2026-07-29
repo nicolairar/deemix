@@ -1,158 +1,90 @@
-# deemix — Unofficial Fork
+# deemix — Unofficial Fork with Apple Music
 
-> **Fork by [@nicolairar](https://github.com/nicolairar)** — adds Apple Music playlist import and Navidrome auto-playlist sync on top of the original [bambanah/deemix](https://github.com/bambanah/deemix).
-
-## Added Features
-
-- **Apple Music integration**: Paste any Apple Music playlist, album, or song URL and deemix will find and download the tracks via Deezer
-- **Navidrome auto-sync**: After a playlist download completes, automatically creates the same playlist in your Navidrome instance
-- **Multi-playlist support**: Multiple Apple Music playlists can be queued and downloaded concurrently, each becoming its own Navidrome playlist
-
-## Configuration
-
-Copy `.env.example` to `.env` and fill in:
-
-| Variable | Description |
-|---|---|
-| `APPLE_TEAM_ID` | Your Apple Developer Team ID |
-| `APPLE_KEY_ID` | MusicKit Key ID from developer.apple.com → Keys |
-| `APPLE_PRIVATE_KEY` | Full content of your .p8 key file |
-| `NAVIDROME_URL` | Your Navidrome URL (e.g. `https://stream.example.com`) |
-| `NAVIDROME_USER` | Navidrome admin username |
-| `NAVIDROME_PASSWORD` | Navidrome admin password |
+> An unofficial fork of [bambanah/deemix](https://github.com/bambanah/deemix), which itself revived the original project by [RemixDev](https://gitlab.com/RemixDev).
+> Maintained by [@nicolairar](https://github.com/nicolairar) to keep the tool alive and add Apple Music support.
 
 ---
 
-# Deemix
+## What's different in this fork
 
-This is the monorepo for the revived Deemix project, originally created by the very talented [RemixDev](https://gitlab.com/RemixDev).
+- **Apple Music plugin** — paste any Apple Music playlist URL and deemix finds and downloads the tracks via Deezer (ISRC matching)
+- **In-app playlist preview** — see the full tracklist with artwork before downloading, select individual tracks
+- **Auto-update** — the app checks GitHub Releases on startup and installs updates automatically with a guided wizard
+- **Date-based versioning** — releases are tagged `yyyy.mm.dd` so it's always clear which build you're running
 
-The docker image was heavily inspired by the fantastic work of [Bockiii](https://gitlab.com/Bockiii/deemix-docker).
+Everything else (Deezer downloads, settings, Docker, CLI) works exactly as in the upstream repo.
 
-### Packages in this Repo
+---
 
-- **deezer-sdk**: Wrapper for Deezer's [API](https://developers.deezer.com/api)
-- **deemix**: The brains of the operation
-- **webui**: [Vue.js](https://vuejs.org/) + [Express](https://expressjs.com/) web interface
-- **gui**: Packaged [Electron](https://www.electronjs.org/) app
+## Download
 
-<a href='https://ko-fi.com/L3L71IQN1F' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+Get the latest macOS build from [Releases](https://github.com/nicolairar/deemix/releases).
 
-## Downloads
-
-### Standalone Electron App
-
-[https://github.com/bambanah/deemix/releases](https://github.com/bambanah/deemix/releases)
-
-Note: The app is not signed (because it's crazy expensive), so you'll need to disable the security warnings when running it.
-
-#### For MacOS
+Since the app isn't signed with an Apple Developer certificate, macOS may block it on first launch. If you see a "damaged" warning, run:
 
 ```bash
-xattr -d com.apple.quarantine /Applications/deemix.app
+xattr -dr com.apple.quarantine /Applications/Deemix.app
 ```
 
-Modify path if installed to a different locaiton
+---
 
-### Docker Image
+## Apple Music setup
 
-Deemix is also available as a [docker image](https://github.com/bambanah/deemix/pkgs/container/deemix).
+You need an [Apple Developer Program](https://developer.apple.com/programs/) account to generate a MusicKit key.
 
-#### Example Usage
+1. Go to [developer.apple.com](https://developer.apple.com) → Certificates, Identifiers & Profiles → Keys
+2. Create a new key, enable **MusicKit**
+3. Download the `.p8` file
+4. In the app → Settings → Apple Music, enter your **Team ID**, **Key ID**, and upload the `.p8` file
 
-```bash
-docker run -d --name Deemix \
-  -v /path/to/music:/downloads \
-  -v /path/to/config:/config \
-  -p 6595:6595 \
-  ghcr.io/bambanah/deemix:latest
-```
+The guide is also available inside the app under Settings → Apple Music → _How to connect Apple Music_.
 
-#### Parameters
-
-All paremeters are optional - if not specified, the default value will be used.
-
-You'll probably want to at least map the download and config folders, as well as the port.
-
-| Parameter                               | Description                                               | Default      |
-|-----------------------------------------|-----------------------------------------------------------|--------------|
-| `-v /path/to/music:/downloads`          | Path to the music folder                                  |              |
-| `-v /path/to/config:/config`            | Path to the config folder                                 |              |
-| `-p 6595:6595`                          | Port mapped to the host                                   |              |
-| `-e DEEMIX_SERVER_PORT=6595`            | Port to expose the server on                              | `6595`       |
-| `-e DEEMIX_DATA_DIR=/config`            | Path to the config folder                                 | `/config`    |
-| `-e DEEMIX_MUSIC_DIR=/downloads`        | Path to the music folder                                  | `/downloads` |
-| `-e DEEMIX_HOST=0.0.0.0`                | Host to bind the server to                                | `0.0.0.0`    |
-| `-e DEEMIX_SINGLE_USER=true`            | Enables single user mode                                  | `true`       |
-| `-e PUID=1000`                          | User ID to use for downloaded files                       | `1000`       |
-| `-e PGID=1000`                          | Group ID to use for downloaded files                      | `1000`       |
-| `-e UMASK_SET=022`                      | Set umask                                                 | `022`        |
-| `-e DISABLE_OWNERSHIP_CHECK=true`       | Disable ownership fix on container start globally         |              |
-| `-e DISABLE_OWNERSHIP_CHECK_MUSIC=true` | Disable ownership fix on container start for music files  |              |
-| `-e DISABLE_OWNERSHIP_CHECK_DATA=true`  | Disable ownership fix on container start for config files |              |
-
-### Nix Flake
-
-Build and run the webui server or cli reproducibly with [Nix](https://nixos.org) (flakes enabled):
-
-```bash
-nix run github:bambanah/deemix#webui      # start the webui server on 0.0.0.0:6595
-nix run github:bambanah/deemix#cli -- <url>  # download a track/playlist
-
-nix build github:bambanah/deemix#webui    # build only, result in ./result
-```
-
-A dev shell with the pinned node + pnpm is available via `nix develop`.
-
-## Feature requests
-
-Before asking for a feature make sure there isn't already an [open issue](https://github.com/bambanah/deemix/issues).
+---
 
 ## Developing
 
-This repo uses [pnpm](https://pnpm.io/) for package management and [Turborepo](https://turbo.build/repo/docs) for monorepo management.
-
-### Dependencies
-
-- Install Node.js 24.x
-- Enable pnpm:
-  ```bash
-  corepack enable
-  ```
-
-### Local Development
-
-1. Clone the repository
-   ```bash
-   git clone https://github.com/bambanah/deemix.git
-   # - OR -
-   gh repo clone bambanah/deemix
-   ```
-2. Install dependencies
-   ```bash
-   pnpm i
-   ```
-3. Start development server
-
-   ```bash
-   pnpm dev
-   ```
-
-   - This will start the development server on port 6595
-   - It will also watch for changes in dependencies and hot reload the app
-
-### Building the Docker Image
-
-A docker image can be built with the provided Dockerfile.
+Requires **Node.js 24** and **pnpm**.
 
 ```bash
-docker build -t deemix .
+# Install dependencies
+pnpm i
+
+# Start dev server (webui on port 6595 + electron)
+pnpm dev
 ```
 
-### Packaging the Electron GUI
-
-A distributable GUI app can be built with the following command:
+### Build & release
 
 ```bash
-pnpm make
+# Build all packages (version is auto-set to today's date)
+pnpm turbo build
+
+# Package the Electron app
+cd packages/gui && pnpm exec electron-forge package
+
+# Sign (ad-hoc, required on macOS)
+codesign --deep --force --sign - out/Deemix-darwin-arm64/Deemix.app
+
+# Create DMG
+create-dmg --volname "deemix-nicolai" ... deemix-nicolai.dmg out/Deemix-darwin-arm64/
+
+# For auto-update: also create a ZIP and latest-mac.yml, then upload all three to the GitHub release
 ```
+
+---
+
+## Contributing
+
+Issues and PRs are welcome at [github.com/nicolairar/deemix](https://github.com/nicolairar/deemix).
+
+If you're fixing something in the core downloader or webui, consider also contributing upstream to [bambanah/deemix](https://github.com/bambanah/deemix).
+
+---
+
+## Credits
+
+- Original deemix: [RemixDev](https://gitlab.com/RemixDev)
+- Revived & maintained as open source: [bambanah](https://github.com/bambanah)
+- This fork: [nicolairar](https://github.com/nicolairar)
+
+License: GPL-3.0

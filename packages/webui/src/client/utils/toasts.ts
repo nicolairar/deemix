@@ -132,3 +132,10 @@ export const toast = function (
 		}
 	}
 };
+
+export const clearToast = (id: string) => {
+	if (toastsWithId[id]) {
+		toastsWithId[id].hideToast();
+		delete toastsWithId[id];
+	}
+};

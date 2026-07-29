@@ -1,11 +1,18 @@
 {
 	"name": "deemix-gui",
-	"version": "0.4.6",
+	"version": "2026.07.29",
 	"private": true,
 	"description": "A standalone electron app that wraps deemix-webui",
 	"main": "dist/main.js",
-	"homepage": "https://github.com/bambanah/deemix",
+	"homepage": "https://github.com/nicolairar/deemix",
 	"author": "Bambanah <hello@lachie.xyz>",
+	"build": {
+		"publish": {
+			"provider": "github",
+			"owner": "nicolairar",
+			"repo": "deemix"
+		}
+	},
 	"license": "GPL-3.0-only",
 	"type": "module",
 	"scripts": {
@@ -34,6 +41,7 @@
 		"deemix-webui": "workspace:*",
 		"electron-context-menu": "^4.1.0",
 		"electron-squirrel-startup": "^1.0.1",
+		"electron-updater": "^6.8.9",
 		"electron-window-state-manager": "^0.3.2",
 		"yargs": "^17.7.2"
 	}

@@ -1376,6 +1376,39 @@ function canDownload(bitrate: number) {
 				</h3>
 			</template>
 
+			<details class="apple-music-guide">
+				<summary>How to connect Apple Music</summary>
+				<p class="apple-music-guide__intro">
+					This feature requires an
+					<a href="https://developer.apple.com" target="_blank" rel="noopener"
+						>Apple Developer Program</a
+					>
+					account. If you have one, follow these steps to get your credentials:
+				</p>
+				<ol class="apple-music-guide__steps">
+					<li>
+						Go to <strong>Certificates, Identifiers &amp; Profiles</strong> →
+						<strong>Keys</strong> → click <strong>+</strong>.
+					</li>
+					<li>
+						Name your key, enable <strong>MusicKit</strong>, click
+						<strong>Continue</strong> → <strong>Register</strong>.
+					</li>
+					<li>
+						Download the <strong>.p8</strong> file (only available once) and
+						note the <strong>Key ID</strong>.
+					</li>
+					<li>
+						Your <strong>Team ID</strong> is shown in the top-right of the
+						Developer Portal, under your name.
+					</li>
+					<li>
+						Fill in Team ID and Key ID below, upload the .p8 file, and click
+						<strong>Save</strong>.
+					</li>
+				</ol>
+			</details>
+
 			<div class="input-group">
 				<p class="input-group-text">Team ID</p>
 				<input v-model="appleMusicFeatures.teamId" type="text" />
@@ -1438,6 +1471,51 @@ function canDownload(bitrate: number) {
 			</label>
 		</BaseAccordion>
 
+		<!-- About this fork -->
+		<div class="about-fork">
+			<div class="about-fork__header">
+				<span class="about-fork__badge">Unofficial Fork</span>
+				<h3 class="about-fork__title">deemix-nicolai</h3>
+			</div>
+			<p class="about-fork__desc">
+				This is an unofficial fork of
+				<a href="https://github.com/bambanah/deemix" target="_blank">deemix</a>
+				by <strong>bambanah</strong>, kept alive and extended with an
+				<strong>Apple Music plugin</strong> so you can download tracks by ISRC
+				matching.
+			</p>
+			<div class="about-fork__links">
+				<a
+					href="https://github.com/nicolairar/deemix"
+					target="_blank"
+					class="about-fork__link"
+				>
+					<i class="material-icons">code</i> Source &amp; Issues
+				</a>
+				<a
+					href="https://github.com/nicolairar/deemix/releases"
+					target="_blank"
+					class="about-fork__link"
+				>
+					<i class="material-icons">download</i> Releases
+				</a>
+				<a
+					href="https://github.com/nicolairar/deemix/fork"
+					target="_blank"
+					class="about-fork__link"
+				>
+					<i class="material-icons">fork_right</i> Fork &amp; Contribute
+				</a>
+			</div>
+			<p class="about-fork__upstream">
+				Original project:
+				<a href="https://github.com/bambanah/deemix" target="_blank"
+					>github.com/bambanah/deemix</a
+				>
+				· License: GPL-3.0
+			</p>
+		</div>
+
 		<footer class="bg-background-main">
 			<button class="btn btn-primary mr-2" @click="resetToDefault">
 				{{ t("settings.reset") }}
@@ -1450,6 +1528,141 @@ function canDownload(bitrate: number) {
 </template>
 
 <style scoped>
+.apple-music-guide {
+	margin-bottom: 0.75rem;
+	font-size: 0.85rem;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: 6px;
+	overflow: hidden;
+}
+
+.apple-music-guide summary {
+	padding: 0.5rem 0.75rem;
+	cursor: pointer;
+	user-select: none;
+	font-weight: 500;
+	opacity: 0.7;
+	list-style: none;
+}
+
+.apple-music-guide summary::-webkit-details-marker {
+	display: none;
+}
+
+.apple-music-guide summary::before {
+	content: "▶ ";
+	font-size: 0.65rem;
+}
+
+.apple-music-guide[open] summary::before {
+	content: "▼ ";
+}
+
+.apple-music-guide__intro {
+	margin: 0.25rem 0.75rem 0.25rem;
+	opacity: 0.75;
+	line-height: 1.5;
+}
+
+.apple-music-guide__intro a {
+	color: var(--primary-color, #cba6f7);
+	text-decoration: underline;
+}
+
+.apple-music-guide__steps {
+	margin: 0;
+	padding: 0.5rem 0.75rem 0.75rem 1.75rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.4rem;
+	opacity: 0.8;
+	line-height: 1.5;
+}
+
+.apple-music-guide__steps a {
+	color: var(--primary-color, #cba6f7);
+	text-decoration: underline;
+}
+
+.about-fork {
+	margin: 1.5rem 0 0.5rem;
+	padding: 1.25rem 1.25rem 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.07);
+	border-radius: 10px;
+	background: rgba(255, 255, 255, 0.02);
+	font-size: 0.85rem;
+}
+
+.about-fork__header {
+	display: flex;
+	align-items: center;
+	gap: 0.6rem;
+	margin-bottom: 0.6rem;
+}
+
+.about-fork__badge {
+	background: rgba(108, 99, 255, 0.2);
+	color: #a89dff;
+	font-size: 0.7rem;
+	font-weight: 600;
+	padding: 2px 8px;
+	border-radius: 99px;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.about-fork__title {
+	font-size: 1rem;
+	font-weight: 600;
+	margin: 0;
+}
+
+.about-fork__desc {
+	opacity: 0.75;
+	line-height: 1.55;
+	margin-bottom: 1rem;
+}
+
+.about-fork__desc a,
+.about-fork__upstream a {
+	color: var(--primary-color, #cba6f7);
+	text-decoration: underline;
+}
+
+.about-fork__links {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 0.9rem;
+}
+
+.about-fork__link {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 5px 12px;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.05);
+	color: var(--foreground);
+	text-decoration: none;
+	font-size: 0.8rem;
+	font-weight: 500;
+	transition: background 0.15s;
+}
+
+.about-fork__link:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+.about-fork__link .material-icons {
+	font-size: 14px;
+}
+
+.about-fork__upstream {
+	opacity: 0.4;
+	font-size: 0.75rem;
+}
+
 #logged_in_info {
 	display: grid;
 	align-items: center;

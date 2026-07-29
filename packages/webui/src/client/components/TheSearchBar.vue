@@ -101,8 +101,11 @@ async function performSearch(term: string, modifierKey: boolean) {
 			}
 		}
 
-		if (term.toLowerCase().includes("music.apple.com") && term.includes("/playlist/")) {
-			emitter.emit("AppleMusicPreview:open", term);
+		if (
+			term.toLowerCase().includes("music.apple.com") &&
+			term.includes("/playlist/")
+		) {
+			router.push({ name: "Apple Music Playlist", query: { url: term } });
 			return;
 		}
 

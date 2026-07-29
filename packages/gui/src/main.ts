@@ -8,6 +8,7 @@ import {
 	MenuItem,
 	shell,
 } from "electron";
+import { autoUpdater } from "electron-updater";
 import contextMenu from "electron-context-menu";
 import fs from "fs";
 import { fileURLToPath } from "node:url";
@@ -101,6 +102,67 @@ async function main() {
 		Menu.setApplicationMenu(menu);
 	}
 
+	// macOS app menu with "Controlla aggiornamenti"
+	if (platform() === "darwin") {
+		Menu.setApplicationMenu(
+			Menu.buildFromTemplate([
+				{
+					label: app.name,
+					submenu: [
+						{ role: "about" },
+						{ type: "separator" },
+						{
+							label: "Controlla aggiornamenti…",
+							click: () => checkForUpdates(false),
+						},
+						{ type: "separator" },
+						{ role: "services" },
+						{ type: "separator" },
+						{ role: "hide" },
+						{ role: "hideOthers" },
+						{ role: "unhide" },
+						{ type: "separator" },
+						{ role: "quit" },
+					],
+				},
+				{
+					label: "Modifica",
+					submenu: [
+						{ role: "undo" },
+						{ role: "redo" },
+						{ type: "separator" },
+						{ role: "cut" },
+						{ role: "copy" },
+						{ role: "paste" },
+						{ role: "selectAll" },
+					],
+				},
+				{
+					label: "Visualizza",
+					submenu: [
+						{ role: "reload" },
+						{ role: "toggleDevTools" },
+						{ type: "separator" },
+						{ role: "resetZoom" },
+						{ role: "zoomIn" },
+						{ role: "zoomOut" },
+						{ type: "separator" },
+						{ role: "togglefullscreen" },
+					],
+				},
+				{
+					label: "Finestra",
+					submenu: [
+						{ role: "minimize" },
+						{ role: "zoom" },
+						{ type: "separator" },
+						{ role: "front" },
+					],
+				},
+			])
+		);
+	}
+
 	// Open links in external browser
 	win.webContents.setWindowOpenHandler(({ url }) => {
 		shell.openExternal(url);
@@ -139,6 +201,115 @@ app.on("window-all-closed", () => {
 		app.quit();
 	}
 });
+
+// ─── Auto-update via electron-updater + GitHub Releases ──────────────────────
+
+autoUpdater.autoDownload = false;
+autoUpdater.autoInstallOnAppQuit = false;
+autoUpdater.setFeedURL({
+	provider: "github",
+	owner: "nicolairar",
+	repo: "deemix",
+	private: false,
+});
+
+let updateWin: BrowserWindow | null = null;
+let silentUpdateCheck = true;
+
+function openUpdateWindow() {
+	if (updateWin && !updateWin.isDestroyed()) {
+		updateWin.focus();
+		return;
+	}
+	updateWin = new BrowserWindow({
+		width: 420,
+		height: 360,
+		resizable: false,
+		minimizable: false,
+		maximizable: false,
+		fullscreenable: false,
+		title: "Deemix Update",
+		titleBarStyle: "hiddenInset",
+		backgroundColor: "#1a1a2e",
+		webPreferences: {
+			preload: join(__dirname, "update-preload.js"),
+			contextIsolation: true,
+			nodeIntegration: false,
+		},
+	});
+	updateWin.loadFile(join(__dirname, "update-window.html"));
+	updateWin.on("closed", () => {
+		updateWin = null;
+	});
+}
+
+function sendToUpdateWin(state: string, payload?: Record<string, unknown>) {
+	if (updateWin && !updateWin.isDestroyed()) {
+		updateWin.webContents.send("update-state", state, payload ?? {});
+	}
+}
+
+autoUpdater.on("checking-for-update", () => {
+	sendToUpdateWin("checking");
+});
+
+autoUpdater.on("update-available", (info) => {
+	if (silentUpdateCheck) {
+		openUpdateWindow();
+	}
+	sendToUpdateWin("available", {
+		version: info.version,
+		current: app.getVersion(),
+	});
+});
+
+autoUpdater.on("update-not-available", () => {
+	if (!silentUpdateCheck) {
+		sendToUpdateWin("not-available", { current: app.getVersion() });
+	} else {
+		updateWin?.close();
+	}
+});
+
+autoUpdater.on("download-progress", (progress) => {
+	sendToUpdateWin("progress", {
+		percent: progress.percent,
+		transferred: progress.transferred,
+		total: progress.total,
+	});
+	win?.setProgressBar(progress.percent / 100);
+});
+
+autoUpdater.on("update-downloaded", () => {
+	win?.setProgressBar(-1);
+	sendToUpdateWin("downloaded");
+	setTimeout(() => autoUpdater.quitAndInstall(false, true), 1500);
+});
+
+autoUpdater.on("error", (err) => {
+	if (!silentUpdateCheck) {
+		sendToUpdateWin("error", { message: err.message });
+	} else {
+		updateWin?.close();
+	}
+});
+
+ipcMain.on("update-start-download", () => autoUpdater.downloadUpdate());
+ipcMain.on("update-close-window", () => updateWin?.close());
+
+function checkForUpdates(silent = false) {
+	silentUpdateCheck = silent;
+	if (!silent) openUpdateWindow();
+	autoUpdater.checkForUpdates().catch(() => {});
+}
+
+// Check on startup (silent — only show dialog if update found)
+app.whenReady().then(() => {
+	setTimeout(() => checkForUpdates(true), 5000);
+});
+
+// Expose to renderer via IPC for a "Controlla aggiornamenti" menu item
+ipcMain.on("checkForUpdates", () => checkForUpdates(false));
 
 ipcMain.on("openDownloadsFolder", () => {
 	const { downloadLocation } = deemixApp.getSettings().settings;
