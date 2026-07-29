@@ -1471,51 +1471,6 @@ function canDownload(bitrate: number) {
 			</label>
 		</BaseAccordion>
 
-		<!-- About this fork -->
-		<div class="about-fork">
-			<div class="about-fork__header">
-				<span class="about-fork__badge">Unofficial Fork</span>
-				<h3 class="about-fork__title">deemix-nicolai</h3>
-			</div>
-			<p class="about-fork__desc">
-				This is an unofficial fork of
-				<a href="https://github.com/bambanah/deemix" target="_blank">deemix</a>
-				by <strong>bambanah</strong>, kept alive and extended with an
-				<strong>Apple Music plugin</strong> so you can download tracks by ISRC
-				matching.
-			</p>
-			<div class="about-fork__links">
-				<a
-					href="https://github.com/nicolairar/deemix"
-					target="_blank"
-					class="about-fork__link"
-				>
-					<i class="material-icons">code</i> Source &amp; Issues
-				</a>
-				<a
-					href="https://github.com/nicolairar/deemix/releases"
-					target="_blank"
-					class="about-fork__link"
-				>
-					<i class="material-icons">download</i> Releases
-				</a>
-				<a
-					href="https://github.com/nicolairar/deemix/fork"
-					target="_blank"
-					class="about-fork__link"
-				>
-					<i class="material-icons">fork_right</i> Fork &amp; Contribute
-				</a>
-			</div>
-			<p class="about-fork__upstream">
-				Original project:
-				<a href="https://github.com/bambanah/deemix" target="_blank"
-					>github.com/bambanah/deemix</a
-				>
-				· License: GPL-3.0
-			</p>
-		</div>
-
 		<footer class="bg-background-main">
 			<button class="btn btn-primary mr-2" @click="resetToDefault">
 				{{ t("settings.reset") }}
@@ -1582,85 +1537,6 @@ function canDownload(bitrate: number) {
 .apple-music-guide__steps a {
 	color: var(--primary-color, #cba6f7);
 	text-decoration: underline;
-}
-
-.about-fork {
-	margin: 1.5rem 0 0.5rem;
-	padding: 1.25rem 1.25rem 1rem;
-	border: 1px solid rgba(255, 255, 255, 0.07);
-	border-radius: 10px;
-	background: rgba(255, 255, 255, 0.02);
-	font-size: 0.85rem;
-}
-
-.about-fork__header {
-	display: flex;
-	align-items: center;
-	gap: 0.6rem;
-	margin-bottom: 0.6rem;
-}
-
-.about-fork__badge {
-	background: rgba(108, 99, 255, 0.2);
-	color: #a89dff;
-	font-size: 0.7rem;
-	font-weight: 600;
-	padding: 2px 8px;
-	border-radius: 99px;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-}
-
-.about-fork__title {
-	font-size: 1rem;
-	font-weight: 600;
-	margin: 0;
-}
-
-.about-fork__desc {
-	opacity: 0.75;
-	line-height: 1.55;
-	margin-bottom: 1rem;
-}
-
-.about-fork__desc a,
-.about-fork__upstream a {
-	color: var(--primary-color, #cba6f7);
-	text-decoration: underline;
-}
-
-.about-fork__links {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	margin-bottom: 0.9rem;
-}
-
-.about-fork__link {
-	display: inline-flex;
-	align-items: center;
-	gap: 4px;
-	padding: 5px 12px;
-	border-radius: 6px;
-	background: rgba(255, 255, 255, 0.05);
-	color: var(--foreground);
-	text-decoration: none;
-	font-size: 0.8rem;
-	font-weight: 500;
-	transition: background 0.15s;
-}
-
-.about-fork__link:hover {
-	background: rgba(255, 255, 255, 0.1);
-}
-
-.about-fork__link .material-icons {
-	font-size: 14px;
-}
-
-.about-fork__upstream {
-	opacity: 0.4;
-	font-size: 0.75rem;
 }
 
 #logged_in_info {
