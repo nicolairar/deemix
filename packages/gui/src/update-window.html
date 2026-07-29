@@ -173,6 +173,14 @@
 				</button>
 				<br />
 				<button class="btn btn-ghost" id="btn-later">Later</button>
+				<br />
+				<button
+					class="btn btn-ghost"
+					id="btn-skip"
+					style="color: #444; font-size: 11px; margin-top: 4px"
+				>
+					Skip this version
+				</button>
 			</div>
 
 			<!-- Downloading -->
@@ -226,6 +234,8 @@
 				if (el) el.classList.add("active");
 			}
 
+			let pendingVersion = null;
+
 			window.electronAPI.onUpdateState((state, payload) => {
 				switch (state) {
 					case "checking":
@@ -233,6 +243,11 @@
 						break;
 
 					case "available":
+						pendingVersion = payload.version;
+						if (localStorage.getItem("skippedVersion") === payload.version) {
+							window.electronAPI.closeWindow();
+							return;
+						}
 						document.getElementById("available-detail").textContent =
 							"Version " +
 							payload.version +
@@ -278,6 +293,12 @@
 			});
 
 			document.getElementById("btn-later").addEventListener("click", () => {
+				window.electronAPI.closeWindow();
+			});
+
+			document.getElementById("btn-skip").addEventListener("click", () => {
+				if (pendingVersion)
+					localStorage.setItem("skippedVersion", pendingVersion);
 				window.electronAPI.closeWindow();
 			});
 
