@@ -18,19 +18,22 @@ const __dirname = path.dirname(__filename);
 async function resolveVersion() {
 	const now = new Date();
 	const year = now.getFullYear();
-	const month = String(now.getMonth() + 1).padStart(2, "0");
-	const day = String(now.getDate()).padStart(2, "0");
+	const month = now.getMonth() + 1;
+	const day = now.getDate();
 	const todayPrefix = `${year}.${month}.${day}`;
 
 	let hasPlainDate = false;
 	let latestNN = 0;
 
 	try {
+		const headers = { "User-Agent": "deemix-build-script" };
+		if (process.env.GITHUB_TOKEN)
+			headers["Authorization"] = `Bearer ${process.env.GITHUB_TOKEN}`;
 		const tags = await new Promise((resolve) => {
 			https
 				.get(
 					"https://api.github.com/repos/nicolairar/deemix/releases?per_page=20",
-					{ headers: { "User-Agent": "deemix-build-script" } },
+					{ headers },
 					(res) => {
 						let body = "";
 						res.on("data", (c) => {
@@ -123,7 +126,7 @@ async function main(argv) {
 				outfile: "./dist/main.js",
 				target: "esnext",
 				format: "esm",
-				external: ["electron", "lightningcss", "electron-updater"],
+				external: ["electron", "lightningcss"],
 				define: {
 					"process.env.NODE_ENV": JSON.stringify(BUILD_MODE),
 					"process.env.GUI_VERSION": JSON.stringify(packageJson.version),
