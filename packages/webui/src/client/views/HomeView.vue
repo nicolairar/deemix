@@ -38,7 +38,18 @@ onMounted(async () => {
 
 <template>
 	<div id="home_tab">
-		<h1 class="mb-8 text-5xl">{{ t("globals.welcome") }}</h1>
+		<h1 class="mb-4 text-5xl">{{ t("globals.welcome") }}</h1>
+		<p class="home-tagline">
+			Paste a link below to download music from any source.
+		</p>
+
+		<div class="source-chips">
+			<span class="source-chip chip-deezer">🎵 Deezer</span>
+			<span class="source-chip chip-yt">▶ YouTube</span>
+			<span class="source-chip chip-sc">☁ SoundCloud</span>
+			<span class="source-chip chip-am">🍎 Apple Music</span>
+			<span class="source-chip chip-sp">🎧 Spotify</span>
+		</div>
 
 		<section
 			v-if="!isLoggedIn"
@@ -146,3 +157,50 @@ onMounted(async () => {
 		</section>
 	</div>
 </template>
+
+<style scoped>
+.home-tagline {
+	opacity: 0.5;
+	font-size: 0.95rem;
+	margin-bottom: 1.25rem;
+}
+
+.source-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+	margin-bottom: 2rem;
+}
+
+.source-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 12px;
+	border-radius: 99px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	opacity: 0.85;
+}
+
+.chip-deezer {
+	background: rgba(255, 120, 0, 0.15);
+	color: #ff9944;
+}
+.chip-yt {
+	background: rgba(255, 0, 0, 0.15);
+	color: #ff5555;
+}
+.chip-sc {
+	background: rgba(255, 85, 0, 0.15);
+	color: #ff7733;
+}
+.chip-am {
+	background: rgba(252, 60, 70, 0.15);
+	color: #fc5a60;
+}
+.chip-sp {
+	background: rgba(29, 185, 84, 0.15);
+	color: #1db954;
+}
+</style>

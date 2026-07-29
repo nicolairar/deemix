@@ -100,6 +100,21 @@ const barStyle = computed(() => {
 	};
 });
 
+const sourceBadge = computed(() => {
+	switch (queueItem.type) {
+		case "youtube_track":
+		case "youtube_playlist":
+			return { label: "YT", color: "#ff3333" };
+		case "soundcloud_track":
+		case "soundcloud_playlist":
+			return { label: "SC", color: "#ff5500" };
+		case "spotify_playlist":
+			return { label: "SP", color: "#1db954" };
+		default:
+			return null;
+	}
+});
+
 const resultIconText = computed(() => {
 	let text = "delete_forever";
 
@@ -182,6 +197,12 @@ function onResultIconClick() {
 					:alt="`Cover ${queueItem.title}`"
 				/>
 				<span v-if="showTags" class="tag">{{ bitrateText }}</span>
+				<span
+					v-if="sourceBadge"
+					class="source-badge"
+					:style="{ background: sourceBadge.color }"
+					>{{ sourceBadge.label }}</span
+				>
 			</div>
 
 			<div class="download-info-data">
@@ -253,6 +274,18 @@ function onResultIconClick() {
 	position: absolute;
 	bottom: 0px;
 	right: 0px;
+}
+.download-object .download-info .coverart .source-badge {
+	position: absolute;
+	top: 3px;
+	left: 3px;
+	padding: 1px 5px;
+	border-radius: 4px;
+	font-size: 0.6rem;
+	font-weight: 800;
+	color: #fff;
+	letter-spacing: 0.04em;
+	line-height: 1.4;
 }
 .download-object .download-info .download-line {
 	display: block;

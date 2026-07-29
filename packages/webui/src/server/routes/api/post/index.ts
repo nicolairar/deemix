@@ -8,6 +8,8 @@ import logout from "./logout.js";
 import saveSettings from "./saveSettings.js";
 import retryDownload from "./retryDownload.js";
 import saveAppleMusicCredentials from "./saveAppleMusicCredentials.js";
+import youtubeDownload from "./youtubeDownload.js";
+import youtubePlaylistDownload from "./youtubePlaylistDownload.js";
 
 export default [
 	changeAccount,
@@ -20,4 +22,6 @@ export default [
 	saveSettings,
 	retryDownload,
 	saveAppleMusicCredentials,
+	youtubeDownload,
+	youtubePlaylistDownload,
 ];

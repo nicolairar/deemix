@@ -39,6 +39,7 @@
 		"deezer-sdk": "workspace:*",
 		"express": "^4.19.2",
 		"express-session": "^1.17.3",
+		"ffmpeg-static": "^5.3.0",
 		"flag-icon-css": "3.5.0",
 		"got": "^14.4.2",
 		"lodash-es": "4.18.1",
@@ -58,7 +59,8 @@
 		"vue-router": "^4.4.3",
 		"winston": "3.14.2",
 		"ws": "^8.18.0",
-		"yargs": "17.7.2"
+		"yargs": "17.7.2",
+		"yt-dlp-wrap": "^2.3.12"
 	},
 	"devDependencies": {
 		"@types/cookie-parser": "^1.4.7",

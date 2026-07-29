@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { pinia } from "@/stores";
 import { useAppInfoStore } from "@/stores/appInfo";
-import { fetchData } from "@/utils/api-utils";
+import { fetchData, postToServer } from "@/utils/api-utils";
 import { sendAddToQueue } from "@/utils/downloads";
 import { emitter } from "@/utils/emitter";
 import { socket } from "@/utils/socket";
@@ -106,6 +106,38 @@ async function performSearch(term: string, modifierKey: boolean) {
 			term.includes("/playlist/")
 		) {
 			router.push({ name: "Apple Music Playlist", query: { url: term } });
+			return;
+		}
+
+		const lower = term.toLowerCase();
+		const isPlaylistUrl =
+			lower.includes("list=") ||
+			lower.includes("/playlist") ||
+			lower.includes("/sets/");
+
+		if (lower.includes("youtube.com") || lower.includes("youtu.be")) {
+			if (isPlaylistUrl) {
+				router.push({ name: "YouTube", query: { url: term } });
+			} else {
+				postToServer("youtubeDownload", {
+					url: term,
+					title: "YouTube Download",
+				});
+				toast("Added to queue", "download");
+			}
+			return;
+		}
+
+		if (lower.includes("soundcloud.com")) {
+			if (isPlaylistUrl) {
+				router.push({ name: "SoundCloud", query: { url: term } });
+			} else {
+				postToServer("youtubeDownload", {
+					url: term,
+					title: "SoundCloud Download",
+				});
+				toast("Added to queue", "download");
+			}
 			return;
 		}
 

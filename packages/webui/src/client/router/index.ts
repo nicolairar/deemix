@@ -16,6 +16,7 @@ import InfoArl from "@/views/InfoArl.vue";
 import InfoSpotifyFeatures from "@/views/InfoSpotifyFeatures.vue";
 import Tracklist from "@/views/TracklistView.vue";
 import AppleMusicPlaylist from "@/views/AppleMusicPlaylistView.vue";
+import YouTubeView from "@/views/YouTubeView.vue";
 
 const Search = () => import("@/views/SearchView.vue");
 const Settings = () => import("@/views/SettingsPage.vue");
@@ -104,6 +105,18 @@ const routes: RouteRecordRaw[] = [
 		path: "/apple-music/playlist",
 		name: "Apple Music Playlist",
 		component: AppleMusicPlaylist,
+		meta: { notKeepAlive: true },
+	},
+	{
+		path: "/youtube",
+		name: "YouTube",
+		component: YouTubeView,
+		meta: { notKeepAlive: true },
+	},
+	{
+		path: "/soundcloud",
+		name: "SoundCloud",
+		component: YouTubeView,
 		meta: { notKeepAlive: true },
 	},
 	{

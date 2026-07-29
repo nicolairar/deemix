@@ -20,6 +20,7 @@ import spotifyStatus from "./spotifyStatus.js";
 import appleMusicStatus from "./appleMusicStatus.js";
 import appleMusicPreview from "./appleMusicPreview.js";
 import checkForUpdates from "./checkForUpdates.js";
+import youtubeInfo from "./youtubeInfo.js";
 
 export default [
 	connect,
@@ -44,4 +45,5 @@ export default [
 	appleMusicStatus,
 	appleMusicPreview,
 	checkForUpdates,
+	youtubeInfo,
 ];

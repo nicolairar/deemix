@@ -187,6 +187,22 @@ async function main(argv) {
 		})(),
 	]);
 
+	// Copy ffmpeg binary next to main.js so __dirname resolves it correctly at runtime
+	try {
+		const ffmpegSrc = require("ffmpeg-static");
+		if (ffmpegSrc) {
+			const ffmpegDest = path.resolve(
+				DIST_DIR,
+				process.platform === "win32" ? "ffmpeg.exe" : "ffmpeg"
+			);
+			await fsp.copyFile(ffmpegSrc, ffmpegDest);
+			await fsp.chmod(ffmpegDest, 0o755);
+			console.log(`[build] Copied ffmpeg → ${ffmpegDest}`);
+		}
+	} catch (e) {
+		console.warn("[build] Could not copy ffmpeg:", e.message);
+	}
+
 	console.log("[build] Complete.");
 }
 

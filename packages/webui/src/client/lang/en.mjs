@@ -1,6 +1,6 @@
 const en = {
 	globals: {
-		welcome: "Welcome to deemix",
+		welcome: "Welcome to Deemix Pro",
 		back: "back",
 		loading: "loading",
 		download: "Download {thing}",
@@ -165,7 +165,8 @@ const en = {
 		noResultsPlaylist: "No Playlists found",
 		error: "An error occurred, please try again later.",
 	},
-	searchbar: "Search anything you want (or just paste a link)",
+	searchbar:
+		"Search on Deezer, or paste a YouTube / SoundCloud / Apple Music link…",
 	downloads: "downloads",
 	toasts: {
 		restoringQueue: "Restoring download queue...",

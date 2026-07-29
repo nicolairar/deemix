@@ -342,6 +342,23 @@ function finishDownload({ uuid }: { uuid: string }) {
 		toast(t("toasts.allDownloaded"), "done_all");
 	}
 }
+function updateQueueItem({
+	uuid,
+	title,
+	artist,
+	cover,
+}: {
+	uuid: string;
+	title?: string;
+	artist?: string;
+	cover?: string | null;
+}) {
+	if (!queueList.value[uuid]) return;
+	if (title) queueList.value[uuid].title = title;
+	if (artist !== undefined) queueList.value[uuid].artist = artist;
+	if (cover !== undefined) queueList.value[uuid].cover = cover;
+}
+
 function startConversion({ uuid, title }: { uuid: string; title: string }) {
 	queueList.value[uuid].status = "converting";
 	queueList.value[uuid].conversion = 0;
@@ -360,6 +377,7 @@ async function showErrorsTab(item) {
 
 onMounted(() => {
 	socket.on("startDownload", startDownload);
+	socket.on("updateQueueItem", updateQueueItem);
 	socket.on("startConversion", startConversion);
 	socket.on("finishConversion", finishConversion);
 	socket.on("addedToQueue", addToQueue);
